@@ -9,70 +9,160 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@500;600;700&display=swap">
 <style>
 :root{
-  --bg:#f3f6fc; --surface:#fff; --ink:#19223a; --muted:#5e6a86; --line:#dbe3f2;
-  --math:#3550c8; --math-soft:#e3e9fd; --be:#2c7a51; --be-soft:#dff0e5;
+  --bg:#f3f6fc; --surface:#fff; --surface-2:#eef2fa; --ink:#19223a; --muted:#5e6a86; --line:#dbe3f2;
+  --ok:#2f9e63; --ok-soft:#dff3e7; --wrong:#d94a4a; --wrong-soft:#fde4e4; --warn:#c2691c;
   --font-body:"Nunito",system-ui,-apple-system,sans-serif;
   --font-head:"Rubik","Nunito",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#11141c; --surface:#1a1f2b; --ink:#eef2fa; --muted:#a3aec5; --line:#2b3242;
-    --math:#93a9ff; --math-soft:#20284a; --be:#7fd0a4; --be-soft:#172c22;
-  }
+  :root:not([data-theme="light"]){ --bg:#11141c; --surface:#1a1f2b; --surface-2:#222838; --ink:#eef2fa; --muted:#a3aec5; --line:#2e3547; --ok-soft:#17301f; --wrong-soft:#3a1e1e; }
 }
-:root[data-theme="dark"]{
-  --bg:#11141c; --surface:#1a1f2b; --ink:#eef2fa; --muted:#a3aec5; --line:#2b3242;
-  --math:#93a9ff; --math-soft:#20284a; --be:#7fd0a4; --be-soft:#172c22;
-}
+:root[data-theme="dark"]{ --bg:#11141c; --surface:#1a1f2b; --surface-2:#222838; --ink:#eef2fa; --muted:#a3aec5; --line:#2e3547; --ok-soft:#17301f; --wrong-soft:#3a1e1e; }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.55}
-.wrap{max-width:720px;margin:0 auto;padding:36px max(16px,env(safe-area-inset-left,0px)) 64px max(16px,env(safe-area-inset-right,0px))}
-h1{font-family:var(--font-head);font-size:30px;line-height:1.2;margin:0 0 8px}
-.sub{color:var(--muted);margin:0 0 28px}
-a.card{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 22px 20px;margin-bottom:16px;transition:transform .12s ease, box-shadow .12s ease}
-a.card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(25,34,58,.10)}
-.tag{display:inline-block;font-family:var(--font-head);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px;margin-bottom:12px}
-.m .tag{background:var(--math-soft);color:var(--math)}
-.b .tag{background:var(--be-soft);color:var(--be)}
-.card h2{font-family:var(--font-head);font-size:21px;margin:0 0 8px;line-height:1.25}
-.card p{margin:0;color:var(--muted);font-size:15.5px}
-.card .go{display:inline-block;margin-top:14px;font-family:var(--font-head);font-size:15px}
-.m .go{color:var(--math)} .b .go{color:var(--be)}
-.note{margin-top:30px;padding:16px 18px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:15px;color:var(--muted)}
+.wrap{max-width:740px;margin:0 auto;padding:34px max(16px,env(safe-area-inset-left,0px)) 64px max(16px,env(safe-area-inset-right,0px))}
+h1{font-family:var(--font-head);font-size:31px;line-height:1.15;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 22px}
+.overall{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 30px}
+.ov{flex:1 1 150px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px}
+.ov b{display:block;font-family:var(--font-head);font-size:25px;line-height:1.1}
+.ov span{font-size:13.5px;color:var(--muted)}
+.ov.good b{color:var(--ok)} .ov.bad b{color:var(--wrong)}
+.subj{margin:0 0 30px}
+.subj-head{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+.dot{width:12px;height:12px;border-radius:50%;flex:none}
+.subj-head h2{font-family:var(--font-head);font-size:21px;margin:0}
+.subj-head .cnt{margin-left:auto;font-size:14px;color:var(--muted);font-family:var(--font-head)}
+a.card{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:10px;transition:transform .12s ease,box-shadow .12s ease}
+a.card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(25,34,58,.09)}
+a.card.done{border-color:var(--ok)}
+.card-top{display:flex;align-items:flex-start;gap:11px}
+.tick{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;color:transparent;margin-top:2px}
+.tick.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.card h3{font-family:var(--font-head);font-size:18px;margin:0 0 3px;line-height:1.25}
+.card .meta{font-size:14px;color:var(--muted)}
+.bar{height:7px;border-radius:999px;background:var(--surface-2);margin:11px 0 0;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:999px}
+.stat{margin:8px 0 0;font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px}
+.stat .err{color:var(--wrong);font-weight:700}
+.stat .allok{color:var(--ok);font-weight:700}
+.note{margin-top:8px;padding:16px 18px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:15px;color:var(--muted)}
 .note b{color:var(--ink)}
 .note ul{margin:8px 0 0;padding-left:20px}
 .note li{margin:4px 0}
+.reset{margin-top:16px;font-family:var(--font-head);font-size:14px;font-weight:600;cursor:pointer;background:none;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:9px 15px}
+.reset:hover{color:var(--ink)}
+@media (max-width:520px){ .ov{flex:1 1 100%} }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Уроки для 3 класса</h1>
-  <p class="sub">Открывай урок, слушай объяснение и вписывай ответы прямо на странице. Страница сама скажет, где правильно, а где нет.</p>
+  <p class="sub">Открывай тему, слушай объяснение и вписывай ответы прямо на странице. Страница сама скажет, где правильно, а где нет, и в конце покажет, где была ошибка с первой попытки.</p>
 
-  <a class="card m" href="matematika.html">
-    <span class="tag">Математика · урок 46</span>
-    <h2>Деление двузначного числа на однозначное</h2>
-    <p>Как понять, на что раскладывать число: разменный автомат, шпаргалка, пошаговый тренажёр и задания урока с проверкой.</p>
-    <span class="go">Открыть урок →</span>
-  </a>
-
-  <a class="card b" href="belaruskaya.html">
-    <span class="tag">Беларуская мова</span>
-    <h2>Даданыя члены сказа</h2>
-    <p>Аўдыёўрок з 6 частак замест учителя, тэорыя і практыкаванні 124, 125, 127, 128, 129 з праверкай і чыставіком.</p>
-    <span class="go">Адкрыць урок →</span>
-  </a>
+  <div class="overall" id="overall"></div>
+  <div id="subjects"></div>
 
   <div class="note">
     <b>Как работать</b>
     <ul>
-      <li>Сначала послушай объяснение — кнопки с 🔊 читают текст голосом.</li>
-      <li>Ответы вписывай сам и нажимай «Проверить» — если ошибка, страница подскажет.</li>
-      <li>Когда всё задание сделано верно, откроется чистовик — его переписываем в тетрадь.</li>
-      <li>Звук работает в Chrome и Safari. Если не слышно — проверь, что телефон не в беззвучном режиме.</li>
+      <li>Сначала послушай урок — кнопки с 🔊 читают объяснение голосом.</li>
+      <li>Вписывай сразу тот ответ, в котором уверена: страница запоминает <b>первую</b> попытку. Если сначала ошибка, а потом верно — задание всё равно попадёт в список ошибок.</li>
+      <li>После ошибки надо нажать «Понятно — пробую ещё раз»: так не получится просто перещёлкать все варианты подряд.</li>
+      <li>Когда задание сделано полностью, откроется чистовик — его переписываем в тетрадь.</li>
+      <li>Галочка на теме появляется, когда сделаны все задания урока.</li>
     </ul>
+    <button class="reset" type="button" id="reset">Сбросить весь прогресс</button>
   </div>
 </div>
+
+<script>
+(function(){
+'use strict';
+var KEY='uroki.progress.v1';
+
+var CATALOG=[
+ {name:'Математика', color:'#3550c8', topics:[
+   {id:'math-46', href:'matematika.html',      t:'Деление двузначного числа на однозначное', m:'Урок 46 · раскладываем на десятки и единицы'},
+   {id:'math-47', href:'matematika-47.html',   t:'Деление двузначного числа на двузначное',  m:'Урок 47 · подбор через умножение'}
+ ]},
+ {name:'Русский язык', color:'#c2410c', topics:[
+   {id:'rus-sostav', href:'russkiy-sostav.html', t:'Разбор слова по составу', m:'с. 114–117 · упражнения 182–187'}
+ ]},
+ {name:'Беларуская мова', color:'#2c7a51', topics:[
+   {id:'be-dadanyia', href:'belaruskaya.html',        t:'Даданыя члены сказа', m:'с. 76–79 · практыкаванні 124–129'},
+   {id:'be-suvyaz',   href:'belaruskaya-suvyaz.html', t:'Сувязь слоў у сказе', m:'с. 81–82 · практыкаванні 131–133'}
+ ]}
+];
+
+function read(){ try{ return JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ return {}; } }
+
+function E(tag,cls,txt){ var e=document.createElement(tag); if(cls)e.className=cls; if(txt!==undefined)e.textContent=txt; return e; }
+
+var P=read();
+var all={topics:0, doneTopics:0, items:0, doneItems:0, first:0, errors:0};
+
+var host=document.getElementById('subjects');
+CATALOG.forEach(function(sub){
+  var box=E('section','subj');
+  var head=E('div','subj-head');
+  var d=E('span','dot'); d.style.background=sub.color; head.appendChild(d);
+  head.appendChild(E('h2',null,sub.name));
+  var cnt=E('span','cnt'); head.appendChild(cnt);
+  box.appendChild(head);
+
+  var doneHere=0;
+  sub.topics.forEach(function(tp){
+    var p=P[tp.id]||null;
+    var total=p? (p.total||0) : 0, done=p? (p.done||0) : 0;
+    var isDone = total>0 && done>=total;
+    all.topics++; all.items+=total; all.doneItems+=done;
+    if(p){ all.first+=(p.first||0); all.errors+=(p.errors||0); }
+    if(isDone){ all.doneTopics++; doneHere++; }
+
+    var a=E('a','card'+(isDone?' done':'')); a.href=tp.href;
+    var top=E('div','card-top');
+    var tick=E('span','tick'+(isDone?' on':''),'✓'); top.appendChild(tick);
+    var txt=E('div');
+    txt.appendChild(E('h3',null,tp.t));
+    txt.appendChild(E('div','meta',tp.m));
+    top.appendChild(txt);
+    a.appendChild(top);
+
+    if(total>0){
+      var bar=E('div','bar'); var fill=E('i'); fill.style.width=Math.round(done/total*100)+'%';
+      fill.style.background=isDone? 'var(--ok)' : sub.color;
+      bar.appendChild(fill); a.appendChild(bar);
+      var st=E('div','stat');
+      st.appendChild(E('span',null,'сделано '+done+' из '+total));
+      if(p.errors>0) st.appendChild(E('span','err','ошибок с первой попытки: '+p.errors));
+      else if(done>0) st.appendChild(E('span','allok','пока без ошибок с первой попытки'));
+      a.appendChild(st);
+    } else {
+      var st2=E('div','stat'); st2.appendChild(E('span',null,'ещё не начато'));
+      a.appendChild(st2);
+    }
+    box.appendChild(a);
+  });
+
+  cnt.textContent=doneHere+' из '+sub.topics.length+' пройдено';
+  host.appendChild(box);
+});
+
+var ov=document.getElementById('overall');
+function card(val,label,cls){ var d=E('div','ov'+(cls?' '+cls:'')); d.appendChild(E('b',null,String(val))); d.appendChild(E('span',null,label)); return d; }
+ov.appendChild(card(all.doneTopics+' из '+all.topics,'Тем пройдено'));
+ov.appendChild(card(all.first,'Заданий с первой попытки','good'));
+ov.appendChild(card(all.errors,'Ошибок с первой попытки', all.errors? 'bad':''));
+
+document.getElementById('reset').addEventListener('click',function(){
+  if(window.confirm('Удалить весь сохранённый прогресс по всем темам? Это нельзя отменить.')){
+    try{ localStorage.removeItem(KEY); }catch(e){}
+    location.reload();
+  }
+});
+})();
+</script>
 </body>
 </html>

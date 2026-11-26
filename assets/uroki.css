@@ -1,0 +1,28 @@
+/* Общие элементы всех уроков: отметка «с первой попытки», замок после ошибки,
+   итоговая карточка с разбором ошибок. Цвета берутся из переменных страницы,
+   а если их нет — из запасных значений. */
+.u-tag{display:inline-block;margin-left:8px;font-family:var(--font-head,system-ui),system-ui,sans-serif;font-size:12.5px;font-weight:600;line-height:1;padding:4px 8px;border-radius:999px;white-space:nowrap;vertical-align:1px}
+.u-tag.first{background:var(--units-soft,var(--accent-soft,#dff3e7));color:var(--units,var(--accent,#2c7a51))}
+.u-tag.late{background:var(--q-soft,var(--tens-soft,#fbead8));color:var(--q,var(--tens,#c2691c))}
+
+.u-gate{display:inline-flex;align-items:center;gap:7px;margin-top:10px;font-family:var(--font-head,system-ui),system-ui,sans-serif;font-size:14.5px;font-weight:600;cursor:pointer;background:var(--surface-2,#eef2fa);color:var(--ink,#19223a);border:1px solid var(--line,#dbe3f2);border-radius:999px;padding:9px 15px}
+.u-gate:hover{background:var(--accent-soft,#e3e9fd)}
+.u-locked{opacity:.5;pointer-events:none}
+
+.u-result{margin:28px 0 0;background:var(--surface,#fff);border:1px solid var(--line,#dbe3f2);border-radius:18px;padding:22px}
+.u-result h3{font-family:var(--font-head,system-ui),system-ui,sans-serif;font-size:21px;margin:0 0 4px}
+.u-result .u-sub{margin:0 0 16px;color:var(--muted,#5e6a86);font-size:15px}
+.u-nums{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.u-num{flex:1 1 150px;background:var(--surface-2,#eef2fa);border-radius:14px;padding:12px 14px}
+.u-num b{display:block;font-family:var(--font-head,system-ui),system-ui,sans-serif;font-size:26px;line-height:1.1}
+.u-num span{font-size:13.5px;color:var(--muted,#5e6a86)}
+.u-num.good b{color:var(--units,var(--accent,#2c7a51))}
+.u-num.bad b{color:var(--wrong,#d94a4a)}
+.u-errs{margin:0;padding:0;list-style:none}
+.u-errs li{padding:11px 0;border-top:1px solid var(--line,#dbe3f2);font-size:15.5px}
+.u-errs .u-where{display:block;font-family:var(--font-head,system-ui),system-ui,sans-serif;font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted,#5e6a86);margin-bottom:3px}
+.u-errs .u-was{color:var(--wrong,#d94a4a)}
+.u-done{margin:14px 0 0;padding:14px 16px;border-radius:14px;background:var(--accent-soft,#e3e9fd);font-size:15.5px}
+.u-again{margin-top:16px;font-family:var(--font-head,system-ui),system-ui,sans-serif;font-size:14.5px;font-weight:600;cursor:pointer;background:none;color:var(--muted,#5e6a86);border:1px solid var(--line,#dbe3f2);border-radius:999px;padding:9px 15px}
+.u-again:hover{color:var(--ink,#19223a)}
+@media (max-width:520px){ .u-num{flex:1 1 100%} }
