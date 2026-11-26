@@ -7,8 +7,8 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Деление на двузначное число</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="assets/lesson.css?v=5">
-<link rel="stylesheet" href="assets/uroki.css?v=5">
+<link rel="stylesheet" href="assets/lesson.css?v=6">
+<link rel="stylesheet" href="assets/uroki.css?v=6">
 <style>
 .ladder{display:flex;flex-direction:column;gap:6px;margin:12px 0}
 .lrow{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-size:19px;padding:7px 12px;border-radius:10px;background:var(--surface-2)}
@@ -24,8 +24,8 @@
 .tr-b.hit{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
 .tr-log{margin:12px 0 0;min-height:26px;text-align:center;font-family:var(--font-head);font-size:17px}
 </style>
-<script src="assets/uroki.js?v=5"></script>
-<script src="assets/lesson.js?v=5"></script>
+<script src="assets/uroki.js?v=6"></script>
+<script src="assets/lesson.js?v=6"></script>
 </head>
 <body>
 <div class="homebar"><a href="./">← Все уроки</a></div>
@@ -160,18 +160,13 @@ function helpDiv(n,dv,a){
   var sm=SAMPLES[(n+dv)%2];
   if(sm.n===n && sm.d===dv) sm=SAMPLES[((n+dv)+1)%2];
   var near=(a>2)? a-1 : a+1;
-  var byParts = du>0
-    ? '«'+dv+' — это '+dt+' и '+du+'. Разделю '+n+' на '+dt+', потом '+n+' на '+du+', а результаты сложу.»'
-    : '«'+n+' больше '+dv+' на '+(n-dv)+'. Значит ответ '+(n-dv)+'.»';
-  var byPartsWhy = du>0
-    ? 'По частям раскладывают <b>делимое</b>, а не делитель. '+n+' : '+dv+' — это совсем не «'+n+' : '+dt+'» плюс «'+n+' : '+du+'». Проверь сама: умножь то, что получилось, на '+dv+' — выйдет не '+n+'.'
-    : 'Это вычитание, а не деление. Деление отвечает на вопрос «сколько раз '+dv+' помещается в '+n+'», а не «на сколько одно больше другого».';
   var ways=[
-    {s:byParts, ok:false, why:byPartsWhy},
-    {s:'«'+near+' · '+dv+' = '+(near*dv)+'. Это почти '+n+', возьму '+near+'.»', ok:false,
-     why:'Почти — не считается. При делении нацело должно получиться <b>ровно</b> '+n+'. Значит, надо брать соседнее число и проверять дальше.'},
-    {s:'«Пробую числа по очереди. '+(a>1? (a-1)+' · '+dv+' = '+((a-1)*dv)+' — меньше, чем нужно. ':'')+a+' · '+dv+' = '+n+' — ровно столько. Значит '+n+' : '+dv+' = '+a+'.»', ok:true,
-     why:'Это и есть подбор: умножаем однозначные числа на делитель, пока не получится делимое. И проверка тут уже встроена.'}
+    {s:'«Разложу делитель на десятки и единицы, разделю делимое на каждую часть отдельно, а результаты сложу.»', ok:false,
+     why:'По частям раскладывают <b>делимое</b>, а не делитель. Так выйдет совсем другое число — проверь обратным умножением, и не сойдётся.'},
+    {s:'«Буду умножать числа на делитель и возьму то, у которого результат получился близко к делимому.»', ok:false,
+     why:'Близко — не считается. При делении нацело должно получиться <b>ровно</b> делимое. Если вышло меньше — бери следующее число, если больше — предыдущее.'},
+    {s:'«Буду по очереди умножать однозначные числа на делитель, пока не получится ровно делимое. Какое число подошло — то и ответ.»', ok:true,
+     why:'Это и есть подбор. И проверка в нём уже встроена: ответ ты находишь самим умножением.'}
   ];
   var k=(n+dv)%3;
   while(k>0){ ways.unshift(ways.pop()); k--; }
