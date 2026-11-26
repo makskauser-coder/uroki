@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3f6fc">
+<meta name="robots" content="noindex, nofollow">
+<title>Уроки — 3 класс</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@500;600;700&display=swap">
+<style>
+:root{
+  --bg:#f3f6fc; --surface:#fff; --ink:#19223a; --muted:#5e6a86; --line:#dbe3f2;
+  --math:#3550c8; --math-soft:#e3e9fd; --be:#2c7a51; --be-soft:#dff0e5;
+  --font-body:"Nunito",system-ui,-apple-system,sans-serif;
+  --font-head:"Rubik","Nunito",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#11141c; --surface:#1a1f2b; --ink:#eef2fa; --muted:#a3aec5; --line:#2b3242;
+    --math:#93a9ff; --math-soft:#20284a; --be:#7fd0a4; --be-soft:#172c22;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11141c; --surface:#1a1f2b; --ink:#eef2fa; --muted:#a3aec5; --line:#2b3242;
+  --math:#93a9ff; --math-soft:#20284a; --be:#7fd0a4; --be-soft:#172c22;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.55}
+.wrap{max-width:720px;margin:0 auto;padding:36px max(16px,env(safe-area-inset-left,0px)) 64px max(16px,env(safe-area-inset-right,0px))}
+h1{font-family:var(--font-head);font-size:30px;line-height:1.2;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 28px}
+a.card{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 22px 20px;margin-bottom:16px;transition:transform .12s ease, box-shadow .12s ease}
+a.card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(25,34,58,.10)}
+.tag{display:inline-block;font-family:var(--font-head);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px;margin-bottom:12px}
+.m .tag{background:var(--math-soft);color:var(--math)}
+.b .tag{background:var(--be-soft);color:var(--be)}
+.card h2{font-family:var(--font-head);font-size:21px;margin:0 0 8px;line-height:1.25}
+.card p{margin:0;color:var(--muted);font-size:15.5px}
+.card .go{display:inline-block;margin-top:14px;font-family:var(--font-head);font-size:15px}
+.m .go{color:var(--math)} .b .go{color:var(--be)}
+.note{margin-top:30px;padding:16px 18px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:15px;color:var(--muted)}
+.note b{color:var(--ink)}
+.note ul{margin:8px 0 0;padding-left:20px}
+.note li{margin:4px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Уроки для 3 класса</h1>
+  <p class="sub">Открывай урок, слушай объяснение и вписывай ответы прямо на странице. Страница сама скажет, где правильно, а где нет.</p>
+
+  <a class="card m" href="matematika.html">
+    <span class="tag">Математика · урок 46</span>
+    <h2>Деление двузначного числа на однозначное</h2>
+    <p>Как понять, на что раскладывать число: разменный автомат, шпаргалка, пошаговый тренажёр и задания урока с проверкой.</p>
+    <span class="go">Открыть урок →</span>
+  </a>
+
+  <a class="card b" href="belaruskaya.html">
+    <span class="tag">Беларуская мова</span>
+    <h2>Даданыя члены сказа</h2>
+    <p>Аўдыёўрок з 6 частак замест учителя, тэорыя і практыкаванні 124, 125, 127, 128, 129 з праверкай і чыставіком.</p>
+    <span class="go">Адкрыць урок →</span>
+  </a>
+
+  <div class="note">
+    <b>Как работать</b>
+    <ul>
+      <li>Сначала послушай объяснение — кнопки с 🔊 читают текст голосом.</li>
+      <li>Ответы вписывай сам и нажимай «Проверить» — если ошибка, страница подскажет.</li>
+      <li>Когда всё задание сделано верно, откроется чистовик — его переписываем в тетрадь.</li>
+      <li>Звук работает в Chrome и Safari. Если не слышно — проверь, что телефон не в беззвучном режиме.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

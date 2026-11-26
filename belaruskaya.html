@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="be">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f7f2">
+<meta name="robots" content="noindex, nofollow">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}*{box-sizing:border-box}</style>
+<title>Даданыя члены сказа</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&family=Rubik:wght@500;600;700&display=swap">
+<style>
+/* Макет: калонка-сшытак 780px; тэорыя — карткі, кожнае практыкаванне — асобная картка з праверкай; у канцы «чыставік» для перапісвання */
+:root{
+  --bg:#f5f7f2;
+  --surface:#ffffff;
+  --surface-2:#eef2e9;
+  --ink:#1c2420;
+  --muted:#5d6b63;
+  --line:#dde4d8;
+  --accent:#2c7a51;
+  --accent-soft:#dff0e5;
+  --q:#c2691c;
+  --q-soft:#fbead8;
+  --sub:#2b5fd0;
+  --sub-soft:#e2e9fb;
+  --pred:#7b3fb8;
+  --pred-soft:#eee2fa;
+  --wrong:#c93a3a;
+  --wrong-soft:#fbe3e3;
+  --font-head:"Rubik","Trebuchet MS",sans-serif;
+  --font-body:"Literata",Georgia,serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121714; --surface:#1a211d; --surface-2:#222b26; --ink:#e9f0ea; --muted:#9db0a5;
+    --line:#2e3a33; --accent:#6cc795; --accent-soft:#1d3327;
+    --q:#efa864; --q-soft:#3a2a18; --sub:#86a7ff; --sub-soft:#1e2742; --pred:#c094f0; --pred-soft:#2b2240;
+    --wrong:#ef7a7a; --wrong-soft:#3a1e1e; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121714; --surface:#1a211d; --surface-2:#222b26; --ink:#e9f0ea; --muted:#9db0a5;
+  --line:#2e3a33; --accent:#6cc795; --accent-soft:#1d3327;
+  --q:#efa864; --q-soft:#3a2a18; --sub:#86a7ff; --sub-soft:#1e2742; --pred:#c094f0; --pred-soft:#2b2240;
+  --wrong:#ef7a7a; --wrong-soft:#3a1e1e; color-scheme:dark;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.6}
+.wrap{max-width:780px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:flex;flex-direction:column;gap:24px}
+h1,h2,h3{font-family:var(--font-head);text-wrap:balance;margin:0}
+h1{font-size:clamp(27px,5.6vw,38px);line-height:1.14;letter-spacing:-.3px}
+h2{font-size:clamp(20px,4vw,25px);line-height:1.22}
+h3{font-size:18px}
+p{margin:0}
+.eyebrow{font-family:var(--font-head);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.lead{color:var(--muted);font-size:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.sec{display:flex;flex-direction:column;gap:14px}
+.sec-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num-badge{font-family:var(--font-head);font-weight:700;font-size:14px;background:var(--accent);color:#fff;border-radius:999px;padding:3px 11px;flex:none}
+.ru{font-size:14.5px;color:var(--muted);font-style:italic}
+.rule{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;padding:12px 15px}
+.rule b{color:var(--accent)}
+.tipbox{background:var(--q-soft);border-left:4px solid var(--q);border-radius:0 12px 12px 0;padding:12px 15px}
+.qlist{display:flex;flex-wrap:wrap;gap:6px}
+.qchip{font-family:var(--font-head);font-size:14px;font-weight:600;background:var(--q-soft);color:var(--q);border-radius:999px;padding:4px 11px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:14.5px;color:var(--muted);align-items:center}
+.lg{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:34px;height:0;flex:none}
+.swatch.s{border-bottom:3px solid var(--sub)}
+.swatch.p{border-bottom:4px double var(--pred)}
+.swatch.d{border-bottom:2px dashed var(--q)}
+
+/* схемы як у падручніку */
+.scheme{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;background:var(--surface-2);border-radius:14px;padding:14px 12px;overflow-x:auto}
+.slot{display:flex;flex-direction:column;align-items:center;gap:2px;flex:none}
+.slot .qq{font-family:var(--font-head);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--q);font-weight:700}
+.slot .arr{color:var(--q);font-size:13px;line-height:1}
+.slot .bar{width:86px;height:14px}
+.slot .bar.s{border-bottom:3px solid var(--sub)}
+.slot .bar.p{border-bottom:4px double var(--pred)}
+.slot .oval{border:2px solid var(--q);color:var(--q);border-radius:999px;padding:2px 12px;font-family:var(--font-head);font-weight:600;font-size:14px}
+.slot .dot{font-family:var(--font-head);font-weight:700;font-size:20px;align-self:flex-end}
+
+/* разметка сказа */
+.sent{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;font-size:19px}
+button.w{font-family:var(--font-body);font-size:19px;background:none;border:none;border-bottom:3px solid transparent;color:var(--ink);padding:2px 3px 4px;cursor:pointer;border-radius:4px 4px 0 0}
+button.w:hover{background:var(--surface-2)}
+button.w.r0{border-bottom:3px solid var(--sub);background:var(--sub-soft)}
+button.w.r1{border-bottom:4px double var(--pred);background:var(--pred-soft)}
+button.w.r2{border-bottom:3px dashed var(--q);background:var(--q-soft)}
+button.w.err{outline:2px solid var(--wrong);outline-offset:1px}
+button.w:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+
+/* заданні */
+.item{display:flex;flex-direction:column;gap:8px;padding:13px 0;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:none;padding-top:2px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:18px}
+.row .pic{font-size:14px;color:var(--muted);font-style:italic;width:100%}
+select.pick{font-family:var(--font-body);font-size:17px;padding:6px 8px;border:2px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--ink);max-width:100%}
+select.pick.ok{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+select.pick.bad{border-color:var(--wrong);background:var(--wrong-soft);color:var(--wrong)}
+select.pick:focus{outline:3px solid var(--accent);outline-offset:1px}
+.fb{font-size:15.5px;line-height:1.55;border-radius:10px;padding:9px 12px}
+.fb.ok{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.fb.bad{background:var(--wrong-soft);color:var(--wrong)}
+.fb.tip{background:var(--q-soft);color:var(--q)}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+button.opt{font-family:var(--font-head);font-weight:600;font-size:15px;border:2px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:11px;padding:8px 14px;cursor:pointer;text-align:left}
+button.opt.ok{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+button.opt.bad{border-color:var(--wrong);background:var(--wrong-soft);color:var(--wrong)}
+.btns{display:flex;gap:9px;flex-wrap:wrap}
+button.b{font-family:var(--font-head);font-weight:600;font-size:15px;border-radius:11px;padding:10px 16px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.b.ghost{background:transparent;color:var(--accent)}
+button.b:focus-visible{outline:3px solid var(--q);outline-offset:2px}
+button.saybtn{align-self:flex-start;font-size:14px;padding:7px 13px}
+.bank{display:flex;flex-wrap:wrap;gap:7px}
+button.word{font-family:var(--font-body);font-size:17px;border:2px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:10px;padding:6px 12px;cursor:pointer}
+button.word.used{opacity:.35;text-decoration:line-through}
+.built{min-height:44px;background:var(--surface-2);border-radius:12px;padding:10px 12px;font-size:19px;border:2px dashed var(--line)}
+.progress{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--accent);color:#fff;border-radius:999px;padding:9px 16px;font-family:var(--font-head);font-weight:600;font-size:15px;display:flex;justify-content:space-between;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,.14)}
+.clean{background:var(--surface);border:2px dashed var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.clean.open{border-style:solid;border-color:var(--accent)}
+.clean h3{color:var(--accent)}
+.clean .lock{color:var(--muted);font-style:italic;font-size:15.5px}
+.clean ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:5px}
+.underS{border-bottom:3px solid var(--sub)}
+.underP{border-bottom:4px double var(--pred)}
+.mini{background:var(--surface-2);border-radius:12px;padding:10px 13px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.q{color:var(--muted);font-size:15px}
+footer{color:var(--muted);font-size:14px;text-align:center;padding-top:6px}
+
+.lesson-list{display:flex;flex-direction:column;gap:6px}
+button.part{font-family:var(--font-head);font-weight:600;font-size:15px;text-align:left;border:2px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:11px;padding:9px 13px;cursor:pointer;display:flex;gap:9px;align-items:center}
+button.part .n{font-size:13px;color:var(--muted);flex:none}
+button.part.now{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+button.part.heard .n::after{content:" \2713"}
+.player{background:var(--accent-soft);border-radius:14px;padding:12px 15px;font-family:var(--font-head);font-weight:600;color:var(--accent);font-size:15.5px}
+</style>
+</head>
+<body>
+<div class="homebar"><a href="./">← Все уроки</a></div>
+<style>.homebar{max-width:820px;margin:0 auto;padding:14px max(16px,env(safe-area-inset-left,0px)) 0}
+.homebar a{display:inline-block;font:600 15px/1 Rubik,system-ui,sans-serif;color:#2c7a51;text-decoration:none;background:#dff0e5;border:1px solid #dde4d8;border-radius:999px;padding:9px 14px}</style>
+
+
+<div class="wrap">
+
+  <header class="sec">
+    <p class="eyebrow">Беларуская мова · 3 клас · с. 76–79</p>
+    <h1>Даданыя члены сказа</h1>
+    <p class="lead">Тэорыя, галасавое тлумачэнне і практыкаванні 124–129 з праверкай. Спачатку выканай усё тут, а потым перапішы ў сшытак — чыставік адкрыецца ўнізе.</p>
+  </header>
+
+
+  <section class="card">
+    <h2>Урок у запісе</h2>
+    <p class="q">Націсні «Слухаць урок» — тэма будзе расказана па частках, як на ўроку. Пасля кожнай часткі наступная ўключыцца сама. Можна слухаць і чытаць старонку адначасова.</p>
+    <div class="lesson-list" id="lesson-list"></div>
+    <div class="player" id="l-now">Частка не выбрана.</div>
+    <div class="btns">
+      <button class="b" id="l-play">▶ Слухаць урок</button>
+      <button class="b ghost" id="l-prev">◀ Назад</button>
+      <button class="b ghost" id="l-next">Далей ▶</button>
+    </div>
+    <p class="q" id="l-note"></p>
+  </section>
+  <section class="card">
+    <h2>1. Пра што гэта тэма</h2>
+    <p>У кожным сказе ёсць <b>галоўныя члены</b>: <b style="color:var(--sub)">дзейнік</b> і <b style="color:var(--pred)">выказнік</b>. Гэта аснова сказа.</p>
+    <div class="grid2">
+      <div class="mini"><p><b style="color:var(--sub)">Дзейнік</b> — пра каго ці пра што гаворыцца ў сказе. Пытанні: <b>хто? што?</b> Падкрэсліваем <span class="underS">адной рыскай</span>.</p></div>
+      <div class="mini"><p><b style="color:var(--pred)">Выказнік</b> — што робіць, што рабіў, які ён. Пытанні: <b>што робіць? што зрабіў?</b> Падкрэсліваем <span class="underP">дзвюма рыскамі</span>.</p></div>
+    </div>
+    <div class="rule"><b>Акрамя галоўных членаў, у сказе могуць быць даданыя.</b> Даданыя члены — гэта ўсе астатнія словы. Яны тлумачаць, дапаўняюць, робяць сказ больш поўным і дакладным. На схеме іх пазначаюць <b>д. ч.</b></div>
+    <p class="ru">По-русски: кроме подлежащего и сказуемого (главных членов), в предложении бывают второстепенные члены — все остальные слова. Они отвечают на вопросы от главных слов.</p>
+    <p><b>Параўнай:</b></p>
+    <div class="grid2">
+      <div class="mini"><p style="font-size:19px">Прайшоў дождж.</p><p class="q">Толькі галоўныя члены.</p></div>
+      <div class="mini"><p style="font-size:19px">Увечары прайшоў дробны дождж.</p><p class="q">Тыя ж галоўныя члены + два даданыя: увечары, дробны.</p></div>
+    </div>
+    <button class="b ghost saybtn" type="button" data-say="Сегодня тема — даданыя члены сказа, то есть второстепенные члены предложения. В каждом предложении есть основа: дзейнік — подлежащее, отвечает на вопросы хто? што?, и выказнік — сказуемое, отвечает на вопрос што робіць?. Послушай: Прайшоў дождж. Здесь только два слова, только главные члены. А теперь: Увечары прайшоў дробны дождж. Главные члены те же: дождж прайшоў. Но добавились ещё два слова: увечары и дробны. Вот это и есть даданыя члены — второстепенные. Они отвечают на вопросы от главных слов: прайшоў калі? увечары. Дождж які? дробны.">🔊 Паслухаць тлумачэнне</button>
+  </section>
+
+  <section class="card">
+    <h2>2. Як знайсці члены сказа — тры крокі</h2>
+    <p><b>Крок 1.</b> Знайдзі, <b>пра каго ці пра што</b> гаворыцца ў сказе — гэта дзейнік (хто? што?).</p>
+    <p><b>Крок 2.</b> Спытай ад дзейніка: <b>што ён робіць?</b> — гэта выказнік.</p>
+    <p><b>Крок 3.</b> Ад галоўных членаў стаў пытанні да астатніх слоў. Усе словы, да якіх ты паставіў пытанне, — <b>даданыя члены</b>.</p>
+    <div class="rule">Словы ў сказе звязаны па сэнсе. Каб устанавіць сувязь слоў, трэба ставіць пытанні ад аднаго слова да другога.</div>
+    <p><b>Узор разбору:</b> Увечары прайшоў дробны дождж.</p>
+    <div class="mini">
+      <p>• Пра што гаворыцца? (<b>што?</b>) — <span class="underS">дождж</span> — дзейнік.</p>
+      <p>• Дождж (<b>што зрабіў?</b>) — <span class="underP">прайшоў</span> — выказнік.</p>
+      <p>• Прайшоў (<b>калі?</b>) — увечары — даданы член.</p>
+      <p>• Дождж (<b>які?</b>) — дробны — даданы член.</p>
+    </div>
+    <p><b>Пытанні даданых членаў</b> — іх варта проста ведаць:</p>
+    <div class="qlist">
+      <span class="qchip">які? якая? якое? якія?</span><span class="qchip">чый? чыя?</span><span class="qchip">каго? што?</span><span class="qchip">каму? чаму?</span><span class="qchip">чым? за чым?</span><span class="qchip">з кім?</span><span class="qchip">дзе?</span><span class="qchip">куды?</span><span class="qchip">калі?</span><span class="qchip">як?</span><span class="qchip">у чым?</span>
+    </div>
+    <button class="b ghost saybtn" type="button" data-say="Как разбирать предложение. Шаг первый: найди, о ком или о чём говорится. Задай вопрос хто? или што?. Это дзейнік, подчёркиваем одной чертой. Шаг второй: спроси от него — што робіць? Это выказнік, подчёркиваем двумя чертами. Шаг третий: от главных слов задавай вопросы к остальным словам. Все слова, к которым ты задал вопрос, — даданыя члены. Разберём предложение: Увечары прайшоў дробны дождж. О чём говорится? Што? Дождж. Это дзейнік. Дождж што зрабіў? Прайшоў. Это выказнік. Прайшоў калі? Увечары. Даданы член. Дождж які? Дробны. Тоже даданы член. Всё предложение разобрано.">🔊 Паслухаць разбор</button>
+  </section>
+
+  <section class="card">
+    <h2>3. Як чытаць схему з падручніка</h2>
+    <p>У схеме адна рыска — дзейнік, дзве рыскі — выказнік, авал <b>д. ч.</b> — даданы член. Стрэлка з пытаннем паказвае, <b>ад якога слова</b> ставіцца пытанне.</p>
+    <div class="scheme">
+      <div class="slot"><span class="qq">якая?</span><span class="arr">↓</span><span class="oval">д. ч.</span></div>
+      <div class="slot"><span class="bar s"></span></div>
+      <div class="slot"><span class="bar p"></span></div>
+      <div class="slot"><span class="qq">што?</span><span class="arr">↓</span><span class="oval">д. ч.</span></div>
+      <div class="slot"><span class="dot">.</span></div>
+    </div>
+    <p class="q">Такая схема чытаецца так: даданы член (якая?) + дзейнік + выказнік + даданы член (што?). Напрыклад: <b>Старанная дзяўчынка чытае кнігу.</b></p>
+    <div class="legend">
+      <span class="lg"><span class="swatch s"></span> дзейнік</span>
+      <span class="lg"><span class="swatch p"></span> выказнік</span>
+      <span class="lg"><span class="swatch d"></span> даданы член</span>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="num-badge">4</span><h2>Практыкаванні</h2></div>
+    <p class="lead">Адказаў тут няма — рабі сам і націскай «Праверыць». Калі памылка, я пакажу дзе і растлумачу.</p>
+    <div class="progress"><span>Выканана</span><span id="progress-n">0 з 0</span></div>
+    <div id="ex" class="sec"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="num-badge">5</span><h2>Чыставік — што перапісаць у сшытак</h2></div>
+    <p class="lead">Кожны блок адкрываецца, калі практыкаванне выканана правільна. Перапісвай акуратна і падкрэслівай галоўныя члены: дзейнік — адной рыскай, выказнік — дзвюма.</p>
+    <div id="clean" class="sec"></div>
+  </section>
+
+  <footer>Беларуская мова, 3 клас · тэма «Даданыя члены сказа»</footer>
+</div>
+
+<script>
+(function(){
+  var exHost=document.getElementById('ex'), cleanHost=document.getElementById('clean'), progEl=document.getElementById('progress-n');
+  var total=0, solved=0, cleanBlocks={};
+  function bump(){ progEl.textContent=solved+' з '+total; }
+
+  function card(title,sub){
+    var c=document.createElement('section'); c.className='card';
+    var h=document.createElement('h3'); h.textContent=title; c.appendChild(h);
+    if(sub){ var p=document.createElement('p'); p.innerHTML=sub; c.appendChild(p); }
+    exHost.appendChild(c); return c;
+  }
+  function fbEl(parent){ var f=document.createElement('div'); f.className='fb'; f.hidden=true; parent.appendChild(f); return f; }
+  function say(f,text,kind){ f.innerHTML=text; f.className='fb '+kind; f.hidden=false; }
+
+  function finish(ex){
+    if(ex.items.every(function(s){return s.done;})){
+      var b=cleanBlocks[ex.id];
+      if(b&&!b.opened){ b.opened=true; b.el.classList.add('open'); b.lock.hidden=true; b.content.hidden=false; }
+    }
+  }
+  function mkEx(id,title,sub,audio){
+    var ex={id:id,items:[],card:card(title,sub)};
+    if(audio){
+      var b=document.createElement('button'); b.className='b ghost saybtn'; b.type='button';
+      b.textContent='\uD83D\uDD0A Паслухаць заданне'; b.setAttribute('data-say',audio);
+      ex.card.appendChild(b);
+    }
+    return ex;
+  }
+  function addBtns(ex,onCheck){
+    var btns=document.createElement('div'); btns.className='btns';
+    var b1=document.createElement('button'); b1.className='b'; b1.type='button'; b1.textContent='Праверыць';
+    var b2=document.createElement('button'); b2.className='b ghost'; b2.type='button'; b2.textContent='Не ведаю — растлумач';
+    b1.addEventListener('click',function(){ ex.items.forEach(function(s){ if(s.check) s.check(); }); finish(ex); });
+    b2.addEventListener('click',function(){ ex.items.forEach(function(s){ if(s.explain) s.explain(); }); });
+    btns.appendChild(b1); btns.appendChild(b2); ex.card.appendChild(btns);
+  }
+  function done(st){ if(!st.done){ st.done=true; solved++; bump(); } }
+
+  /* ---- віджэт: разметка сказа ---- */
+  var ROLE=['дзейнік','выказнік','даданы член'];
+  function markWidget(ex,data){
+    var wrap=document.createElement('div'); wrap.className='item';
+    var hint=document.createElement('p'); hint.className='q';
+    hint.textContent='Націскай на слова: 1 раз — дзейнік, 2 разы — выказнік, 3 разы — даданы член, 4 — зняць.';
+    var line=document.createElement('div'); line.className='sent';
+    var st={done:false, btns:[]};
+    data.words.forEach(function(wd,i){
+      var b=document.createElement('button'); b.type='button'; b.className='w'; b.textContent=wd.w;
+      b.setAttribute('aria-label',wd.w);
+      var cur=-1;
+      b.addEventListener('click',function(){
+        cur=(cur+2)%4-1;
+        b.className='w'+(cur>=0?' r'+cur:'');
+      });
+      b.getRole=function(){ return cur; };
+      st.btns.push(b); line.appendChild(b);
+    });
+    wrap.appendChild(hint); wrap.appendChild(line);
+    var f=fbEl(wrap); ex.card.appendChild(wrap); total++;
+    st.check=function(){
+      var bad=[];
+      st.btns.forEach(function(b,i){
+        b.classList.remove('err');
+        if(b.getRole()!==data.words[i].r){ b.classList.add('err'); bad.push(i); }
+      });
+      if(!bad.length){
+        done(st);
+        say(f,'Правільна! '+data.words.filter(function(w){return w.r===0;}).map(function(w){return w.w;}).join(' ')+' — дзейнік, '+data.words.filter(function(w){return w.r===1;}).map(function(w){return w.w;}).join(' ')+' — выказнік, астатняе — даданыя члены.','ok');
+        return true;
+      }
+      var msg='Яшчэ не так. Паглядзі на словы, абведзеныя чырвоным:<br>';
+      bad.slice(0,3).forEach(function(i){ msg+='• <b>'+data.words[i].w+'</b> — '+data.words[i].why+'<br>'; });
+      say(f,msg,'bad'); return false;
+    };
+    st.explain=function(){
+      var msg='';
+      data.words.forEach(function(w){ msg+='• <b>'+w.w+'</b> — '+ROLE[w.r]+'. '+w.why+'<br>'; });
+      say(f,msg,'tip');
+    };
+    ex.items.push(st); return st;
+  }
+
+  /* ---- віджэт: выбар слова ---- */
+  function pickWidget(ex,data){
+    var wrap=document.createElement('div'); wrap.className='item';
+    var row=document.createElement('div'); row.className='row';
+    if(data.pic){ var pc=document.createElement('span'); pc.className='pic'; pc.textContent='Малюнак: '+data.pic; row.appendChild(pc); }
+    var st={done:false, sels:[]};
+    data.parts.forEach(function(p){
+      if(typeof p==='string'){ var s=document.createElement('span'); s.innerHTML=p; row.appendChild(s); }
+      else{
+        var sel=document.createElement('select'); sel.className='pick';
+        sel.setAttribute('aria-label',p.q||'выберы слова');
+        var o0=document.createElement('option'); o0.value=''; o0.textContent=(p.q? p.q+' …':'выберы …'); sel.appendChild(o0);
+        p.opts.forEach(function(o,oi){ var op=document.createElement('option'); op.value=String(oi); op.textContent=o; sel.appendChild(op); });
+        sel.correct=p.a; sel.why=p.why; sel.qq=p.q||'';
+        st.sels.push(sel); row.appendChild(sel);
+      }
+    });
+    wrap.appendChild(row);
+    var f=fbEl(wrap); ex.card.appendChild(wrap); total++;
+    st.check=function(){
+      var bad=[], empty=0;
+      st.sels.forEach(function(s){
+        s.classList.remove('ok','bad');
+        if(s.value===''){ empty++; return; }
+        if(Number(s.value)===s.correct){ s.classList.add('ok'); } else { s.classList.add('bad'); bad.push(s); }
+      });
+      if(empty){ say(f,'Выберы словы ва ўсіх ваконцах.','tip'); return false; }
+      if(!bad.length){ done(st); say(f,'Правільна! '+(data.ok||''),'ok'); return true; }
+      var msg='';
+      bad.forEach(function(s){ msg+='• '+(s.qq? 'Пытанне <b>'+s.qq+'</b> — ':'')+s.why+'<br>'; });
+      say(f,msg,'bad'); return false;
+    };
+    st.explain=function(){
+      var msg='';
+      st.sels.forEach(function(s){ msg+='• '+(s.qq? '<b>'+s.qq+'</b> — ':'')+s.why+'<br>'; });
+      say(f,msg,'tip');
+    };
+    ex.items.push(st); return st;
+  }
+
+  /* ---- віджэт: выбар варыянта ---- */
+  function choiceWidget(ex,data){
+    var wrap=document.createElement('div'); wrap.className='item';
+    var qp=document.createElement('p'); qp.innerHTML=data.q; wrap.appendChild(qp);
+    var opts=document.createElement('div'); opts.className='opts';
+    var st={done:false};
+    var f;
+    data.opts.forEach(function(o,oi){
+      var b=document.createElement('button'); b.type='button'; b.className='opt'; b.textContent=o;
+      b.addEventListener('click',function(){
+        if(oi===data.a){ b.classList.add('ok'); b.classList.remove('bad'); done(st); say(f,'Правільна! '+data.why,'ok'); finish(ex); }
+        else{ b.classList.add('bad'); say(f,data.no&&data.no[oi]? data.no[oi] : 'Не, паспрабуй яшчэ. '+(data.hint||''),'bad'); }
+      });
+      opts.appendChild(b);
+    });
+    wrap.appendChild(opts); f=fbEl(wrap); ex.card.appendChild(wrap); total++;
+    st.explain=function(){ say(f,data.why,'tip'); };
+    ex.items.push(st); return st;
+  }
+
+  /* ---- віджэт: скласці сказ ---- */
+  function orderWidget(ex,data){
+    var wrap=document.createElement('div'); wrap.className='item';
+    if(data.scheme){ wrap.appendChild(data.scheme); }
+    var built=document.createElement('div'); built.className='built'; built.textContent='';
+    var bank=document.createElement('div'); bank.className='bank';
+    var chosen=[], st={done:false};
+    var f;
+    function redraw(){ built.textContent=chosen.map(function(i){return data.words[i];}).join(' ')+(chosen.length?'.':''); }
+    data.words.forEach(function(w,i){
+      var b=document.createElement('button'); b.type='button'; b.className='word'; b.textContent=w;
+      b.addEventListener('click',function(){
+        if(chosen.indexOf(i)>=0) return;
+        chosen.push(i); b.classList.add('used'); redraw();
+      });
+      bank.appendChild(b);
+    });
+    var clr=document.createElement('button'); clr.type='button'; clr.className='b ghost'; clr.textContent='Ачысціць'; clr.style.fontSize='14px'; clr.style.padding='6px 12px';
+    clr.addEventListener('click',function(){ chosen=[]; [].slice.call(bank.children).forEach(function(b){b.classList.remove('used');}); redraw(); });
+    wrap.appendChild(bank); wrap.appendChild(built); wrap.appendChild(clr);
+    f=fbEl(wrap); ex.card.appendChild(wrap); total++;
+    st.check=function(){
+      if(chosen.length!==data.words.length){ say(f,'Выкарыстай усе словы.','tip'); return false; }
+      var ok=chosen.every(function(v,i){ return v===data.order[i]; });
+      if(ok){ done(st); say(f,'Правільна! '+data.why,'ok'); return true; }
+      say(f,'Парадак не падыходзіць пад схему. '+data.hint,'bad'); return false;
+    };
+    st.explain=function(){ say(f,data.why,'tip'); };
+    ex.items.push(st); return st;
+  }
+
+  function schemeEl(slots){
+    var s=document.createElement('div'); s.className='scheme';
+    slots.forEach(function(sl){
+      var d=document.createElement('div'); d.className='slot';
+      if(sl.q){ var q=document.createElement('span'); q.className='qq'; q.textContent=sl.q; d.appendChild(q);
+        var a=document.createElement('span'); a.className='arr'; a.textContent='↓'; d.appendChild(a); }
+      var e=document.createElement('span');
+      if(sl.t==='s'){ e.className='bar s'; }
+      else if(sl.t==='p'){ e.className='bar p'; }
+      else if(sl.t==='d'){ e.className='oval'; e.textContent='д. ч.'; }
+      else { e.className='dot'; e.textContent='.'; }
+      d.appendChild(e); s.appendChild(d);
+    });
+    return s;
+  }
+
+  /* ================= ПРАКТЫКАВАННІ ================= */
+
+  /* 124 */
+  var e124=mkEx('124','Практыкаванне 124','Прачытай сказы. Вызнач, у якіх ёсць толькі галоўныя члены, а ў якіх ёсць і даданыя.','Практыкаванне сто дваццаць чатыры. Прочитай шесть предложений. Три из них совсем короткие: Прайшоў дождж. Шумелі дубы. Сонца ўзышло. В них только два слова, только главные члены — дзейнік и выказнік. А три других длиннее: Увечары прайшоў дробны дождж. На ўзлеску шумелі старыя дубы. Над лесам узышло яркае сонца. В них к тем же главным членам добавились другие слова — это и есть даданыя члены. Сначала для каждого предложения выбери нужную кнопку. Потом в трёх длинных предложениях размечай слова: нажимай на слово один раз — будет дзейнік, два раза — выказнік, три раза — даданы член.');
+  [['Прайшоў дождж.',0],['Увечары прайшоў дробны дождж.',1],['Шумелі дубы.',0],['На ўзлеску шумелі старыя дубы.',1],['Сонца ўзышло.',0],['Над лесам узышло яркае сонца.',1]].forEach(function(p){
+    choiceWidget(e124,{q:'<b style="font-size:19px">'+p[0]+'</b>',opts:['Толькі галоўныя члены','Ёсць і даданыя члены'],a:p[1],
+      why:p[1]? 'Акрамя дзейніка і выказніка тут ёсць яшчэ словы — даданыя члены.' : 'Тут толькі два галоўныя члены: дзейнік і выказнік, больш слоў няма.',
+      hint:'Палічы словы: калі іх больш за два — значыць, ёсць даданыя члены.'});
+  });
+  e124.card.appendChild(document.createElement('hr')).style.cssText='border:none;border-top:1px solid var(--line);width:100%;margin:4px 0';
+  var p124=document.createElement('p'); p124.innerHTML='Цяпер падкрэслі галоўныя члены ў сказах, якія трэба выпісаць:'; e124.card.appendChild(p124);
+  markWidget(e124,{words:[
+    {w:'Увечары',r:2,why:'Прайшоў (калі?) увечары — гэта даданы член.'},
+    {w:'прайшоў',r:1,why:'Дождж (што зрабіў?) прайшоў — выказнік, дзве рыскі.'},
+    {w:'дробны',r:2,why:'Дождж (які?) дробны — даданы член.'},
+    {w:'дождж.',r:0,why:'Пра што гаворыцца? (што?) дождж — дзейнік, адна рыска.'}]});
+  markWidget(e124,{words:[
+    {w:'На',r:2,why:'Прыназоўнік «на» ідзе разам са словам «узлеску» — разам яны даданы член (дзе?).'},
+    {w:'узлеску',r:2,why:'Шумелі (дзе?) на ўзлеску — даданы член.'},
+    {w:'шумелі',r:1,why:'Дубы (што рабілі?) шумелі — выказнік.'},
+    {w:'старыя',r:2,why:'Дубы (якія?) старыя — даданы член.'},
+    {w:'дубы.',r:0,why:'Пра што гаворыцца? (што?) дубы — дзейнік.'}]});
+  markWidget(e124,{words:[
+    {w:'Над',r:2,why:'Прыназоўнік «над» ідзе разам са словам «лесам».'},
+    {w:'лесам',r:2,why:'Узышло (дзе?) над лесам — даданы член.'},
+    {w:'узышло',r:1,why:'Сонца (што зрабіла?) узышло — выказнік.'},
+    {w:'яркае',r:2,why:'Сонца (якое?) яркае — даданы член.'},
+    {w:'сонца.',r:0,why:'Пра што гаворыцца? (што?) сонца — дзейнік.'}]});
+  addBtns(e124);
+
+  /* 125 */
+  var e125=mkEx('125','Практыкаванне 125','Дапоўні сказы даданымі членамі па пытаннях. Словы для даведкі: <i>хутка, у тэатр, яе, білеты, даўно, лялечным</i>.','Практыкаванне сто дваццаць пяць. Нужно дополнить предложения даданымі членамі по вопросам. Слова для даведкі, то есть слова для подсказки: хутка, у тэатр, яе, білеты, даўно, лялечным. Смотри на вопрос над пропуском и выбирай слово, которое на этот вопрос отвечает. Например: пачнуцца калі? хутка. Пойдзе куды? у тэатр. Бабуля чыя? яе. Купіла што? білеты.');
+  pickWidget(e125,{parts:[{q:'калі?',opts:['Хутка','Даўно','Добра'],a:0,why:'Пачнуцца (калі?) — <b>хутка</b>. «Даўно» не падыходзіць: канікулы яшчэ не пачаліся.'},' пачнуцца канікулы.'],ok:'Хутка пачнуцца канікулы.'});
+  pickWidget(e125,{parts:['Надзейка пойдзе ',{q:'куды?',opts:['у тэатр','у школу','дадому'],a:0,why:'Пойдзе (куды?) — <b>у тэатр</b>. Гэта слова са слоў для даведкі.'},'.'],ok:'Надзейка пойдзе ў тэатр.'});
+  pickWidget(e125,{parts:[{q:'чыя?',opts:['Яе','Мая','Наша'],a:0,why:'Бабуля (чыя?) — <b>яе</b>, бо гаворым пра Надзейку.'},' бабуля ўжо купіла ',{q:'што?',opts:['білеты','кнігі','цукеркі'],a:0,why:'Купіла (што?) — <b>білеты</b>, бо ідуць у тэатр.'},'.'],ok:'Яе бабуля ўжо купіла білеты.'});
+  pickWidget(e125,{parts:['Дзяўчынка ',{q:'калі?',opts:['даўно','хутка','заўтра'],a:0,why:'Не была (калі?) — <b>даўно</b>.'},' не была ў ',{q:'якім?',opts:['лялечным','новым','вялікім'],a:0,why:'У тэатры (якім?) — <b>лялечным</b>. Гэта слова са слоў для даведкі.'},' тэатры.'],ok:'Дзяўчынка даўно не была ў лялечным тэатры.'});
+  addBtns(e125);
+
+  /* 127 */
+  var e127=mkEx('127','Практыкаванне 127','З дапамогай малюнкаў у падручніку дапоўні сказы даданымі членамі па пытаннях.','Практыкаванне сто дваццаць сем. Возьми учебник и посмотри на восемь рисунков. По каждому рисунку надо дополнить предложение словом, которое отвечает на вопрос в скобках. Например: Таня малюе каго? Посмотри, кто нарисован на первом рисунке. Там певень, значит пеўніка. Помни главное: слово должно отвечать именно на тот вопрос, который стоит в скобках. А в конце выбери предложение, которое подходит к схеме.');
+  var P=[
+   {parts:['Таня малюе ',{q:'каго?',opts:['пеўніка','кнігу','дом'],a:0,why:'Малюе (каго?) — <b>пеўніка</b>: на малюнку намаляваны певень.'},'.'],pic:'дзяўчынка намалявала пеўніка',ok:'Таня малюе пеўніка.'},
+   {parts:['Бабуля вяжа ',{q:'што?',opts:['шалік','суп','ліст'],a:0,why:'Вяжа (што?) — <b>шалік</b>: бабуля ў крэсле вяжа чырвоны шалік.'},' ',{q:'каму?',opts:['унучцы','суседу','настаўніцы'],a:0,why:'Вяжа (каму?) — <b>унучцы</b>.'},'.'],pic:'бабуля ў крэсле вяжа чырвоны шалік',ok:'Бабуля вяжа шалік унучцы.'},
+   {parts:[{q:'якая?',opts:['Старанная','Высокая','Сумная'],a:0,why:'Дзяўчынка (якая?) — <b>старанная</b>: яна сядзіць за сталом пры лямпе і ўважліва чытае.'},' дзяўчынка чытае ',{q:'што?',opts:['кнігу','ліст','газету'],a:0,why:'Чытае (што?) — <b>кнігу</b>.'},'.'],pic:'дзяўчынка за сталом пры лямпе чытае кнігу',ok:'Старанная дзяўчынка чытае кнігу.'},
+   {parts:['Мама вязе ',{q:'каго?',opts:['дзяцей','сабаку','бабулю'],a:0,why:'Вязе (каго?) — <b>дзяцей</b>: у машыне сядзяць дзеці.'},' ',{q:'куды?',opts:['у школу','у лес','на мора'],a:0,why:'Вязе (куды?) — <b>у школу</b>.'},'.'],pic:'чырвоная машына, у ёй мама і дзеці',ok:'Мама вязе дзяцей у школу.'},
+   {parts:['Дзед гуляе ',{q:'з кім?',opts:['з унукам','з катом','з суседам'],a:0,why:'Гуляе (з кім?) — <b>з унукам</b>.'},' ',{q:'у што?',opts:['у шахматы','у футбол','у хованкі'],a:0,why:'Гуляе (у што?) — <b>у шахматы</b>: на стале шахматная дошка.'},'.'],pic:'хлопчык і дзед гуляюць у шахматы',ok:'Дзед гуляе з унукам у шахматы.'},
+   {parts:[{q:'калі?',opts:['Увечары','Улетку','Зімой'],a:0,why:'Сабралася (калі?) — <b>увечары</b>: уся сям’я разам пасля дня.'},' сям’я сабралася ',{q:'дзе?',opts:['за сталом','у двары','у лесе'],a:0,why:'Сабралася (дзе?) — <b>за сталом</b>.'},'.'],pic:'бацькі і дзеці за накрытым сталом',ok:'Увечары сям’я сабралася за сталом.'},
+   {parts:['Тата працуе ',{q:'за чым?',opts:['за камп’ютарам','за кіраўніцтвам','за кнігай'],a:0,why:'Працуе (за чым?) — <b>за камп’ютарам</b>: на малюнку мужчына і ноўтбук.'},'.'],pic:'мужчына працуе за ноўтбукам',ok:'Тата працуе за камп’ютарам.'},
+   {parts:['Міша забівае ',{q:'што?',opts:['цвік','мяч','гол'],a:0,why:'Забівае (што?) — <b>цвік</b>: хлопец у фартуху працуе малатком.'},'.'],pic:'хлопец у фартуху забівае цвік',ok:'Міша забівае цвік.'}
+  ];
+  P.forEach(function(d){ pickWidget(e127,d); });
+  choiceWidget(e127,{q:'Які з гэтых сказаў адпавядае схеме: <b>(якая?) д. ч. — дзейнік — выказнік — д. ч. (што?)</b>?',
+    opts:['Таня малюе пеўніка.','Старанная дзяўчынка чытае кнігу.','Дзед гуляе з унукам у шахматы.'],a:1,
+    why:'Старанная (якая?) + дзяўчынка (дзейнік) + чытае (выказнік) + кнігу (што?). Усё супадае са схемай.',
+    no:['У гэтым сказе няма слова на пытанне «якая?».',null,'Тут даданыя члены адказваюць на пытанні «з кім?» і «у што?», а не «якая?» і «што?».'],
+    hint:'Шукай сказ, дзе перад дзейнікам стаіць слова на пытанне «якая?».'});
+  addBtns(e127);
+
+  /* 128 */
+  var e128=mkEx('128','Практыкаванне 128','Скорагаворкі. Назаві галоўныя члены сказа і пастаў пытанні да астатніх слоў.','Практыкаванне сто дваццаць восем. Это скорагаворкі, скороговорки. Сначала прочитай их вслух несколько раз, быстро. Катаецца ад рання кот на катамаране. Круглыя сланечнікі ловяць цёплыя праменьчыкі. Теперь найди в них главные члены. В первой: о ком говорится? Кот. Что он делает? Катаецца. Во второй: сланечнікі ловяць. Все остальные слова — даданыя члены, к ним ставим вопросы: катаецца калі? ад рання. Катаецца на чым? на катамаране. А потом выбери, какое предложение подходит к схеме, и запиши его в тетрадь.');
+  markWidget(e128,{words:[
+    {w:'Катаецца',r:1,why:'Кот (што робіць?) катаецца — выказнік.'},
+    {w:'ад',r:2,why:'Прыназоўнік «ад» ідзе разам са словам «рання».'},
+    {w:'рання',r:2,why:'Катаецца (калі?) ад рання — даданы член.'},
+    {w:'кот',r:0,why:'Пра каго гаворыцца? (хто?) кот — дзейнік.'},
+    {w:'на',r:2,why:'Прыназоўнік «на» ідзе разам са словам «катамаране».'},
+    {w:'катамаране.',r:2,why:'Катаецца (на чым?) на катамаране — даданы член.'}]});
+  markWidget(e128,{words:[
+    {w:'Круглыя',r:2,why:'Сланечнікі (якія?) круглыя — даданы член.'},
+    {w:'сланечнікі',r:0,why:'Пра што гаворыцца? (што?) сланечнікі — дзейнік.'},
+    {w:'ловяць',r:1,why:'Сланечнікі (што робяць?) ловяць — выказнік.'},
+    {w:'цёплыя',r:2,why:'Праменьчыкі (якія?) цёплыя — даданы член.'},
+    {w:'праменьчыкі.',r:2,why:'Ловяць (што?) праменьчыкі — даданы член.'}]});
+  choiceWidget(e128,{q:'Які сказ адпавядае схеме: <b>(якія?) д. ч. — дзейнік — выказнік — д. ч. (што?) з д. ч. (якія?)</b>? Яго трэба запісаць.',
+    opts:['Катаецца ад рання кот на катамаране.','Круглыя сланечнікі ловяць цёплыя праменьчыкі.'],a:1,
+    why:'Круглыя (якія?) сланечнікі ловяць цёплыя (якія?) праменьчыкі (што?). Два словы на пытанне «якія?» — як у схеме.',
+    no:['Тут даданыя члены адказваюць на пытанні «калі?» і «на чым?», а ў схеме патрэбны «якія?» і «што?».',null],
+    hint:'У схеме два авалы з пытаннем «якія?». Шукай сказ з двума прыметнікамі.'});
+  addBtns(e128);
+
+  /* 129 */
+  var e129=mkEx('129','Практыкаванне 129 (дамашняе)','З асобных слоў складзі па схемах сказы. Націскай на словы ў патрэбным парадку.','Практыкаванне сто дваццаць дзевяць, домашнее. Из отдельных слов надо составить предложения по схемам. Смотри на схему: одна чёрточка — дзейнік, двойная — выказнік, овалы — даданыя члены с вопросами. Начинай всегда с дзейніка: о ком говорится? Потом что он делает. Потом подставляй остальные слова по вопросам. Нажимай на слова в нужном порядке. И не забудь про последний вопрос: почему в слове скрыпцы пишется ы.');
+  orderWidget(e129,{
+    scheme:schemeEl([{t:'s'},{t:'p'},{q:'якую?',t:'d'},{q:'што?',t:'d'},{t:'.'}]),
+    words:['Каця','музычную','наведвае','школу'], order:[0,2,1,3],
+    why:'Каця (дзейнік) наведвае (выказнік) музычную (якую?) школу (што?).',
+    hint:'Пачні з таго, пра каго гаворыцца: хто? Каця. Потым — што яна робіць?'});
+  orderWidget(e129,{
+    scheme:schemeEl([{t:'s'},{t:'p'},{q:'як?',t:'d'},{q:'на чым?',t:'d'},{t:'.'}]),
+    words:['Дзяўчынка','на','скрыпцы','іграе','добра'], order:[0,4,3,1,2],
+    why:'Дзяўчынка (дзейнік) добра (як?) іграе (выказнік) на скрыпцы (на чым?). Прыназоўнік «на» стаіць перад словам «скрыпцы».',
+    hint:'Пачні з дзейніка: хто? Дзяўчынка. Слова «добра» адказвае на пытанне «як?», «на скрыпцы» — на пытанне «на чым?».'});
+  choiceWidget(e129,{q:'Растлумач правапіс выдзеленай літары ў слове скр<b>ы</b>пцы. Чаму пішам <b>ы</b>, а не <b>і</b>?',
+    opts:['Бо так прыгажэй','Бо пасля зацвярдзелых ж, дж, ч, ш, р, ц заўсёды пішацца ы','Бо слова іншамоўнае'],a:1,
+    why:'У беларускай мове пасля зацвярдзелых <b>ж, дж, ч, ш, р, ц</b> пішацца <b>ы</b>: скрыпка, рыба, жыць, шырокі, цырк.',
+    hint:'Паглядзі, якая літара стаіць перад «ы».'});
+  addBtns(e129);
+
+  /* ================= ЧЫСТАВІК ================= */
+  var CLEAN=[
+   {id:'124',t:'Практыкаванне 124',lines:['<u class="underS">Дождж</u> — падкрэслі адной рыскай, <u class="underP">прайшоў</u> — дзвюма. Увечары <u class="underP">прайшоў</u> дробны <u class="underS">дождж</u>.','На ўзлеску <u class="underP">шумелі</u> старыя <u class="underS">дубы</u>.','Над лесам <u class="underP">узышло</u> яркае <u class="underS">сонца</u>.']},
+   {id:'125',t:'Практыкаванне 125',lines:['Хутка <u class="underP">пачнуцца</u> <u class="underS">канікулы</u>.','<u class="underS">Надзейка</u> <u class="underP">пойдзе</u> ў тэатр.','Яе <u class="underS">бабуля</u> ўжо <u class="underP">купіла</u> білеты.','<u class="underS">Дзяўчынка</u> даўно <u class="underP">не была</u> ў лялечным тэатры.']},
+   {id:'127',t:'Практыкаванне 127',lines:['Таня малюе пеўніка.','Бабуля вяжа шалік унучцы.','Старанная дзяўчынка чытае кнігу.','Мама вязе дзяцей у школу.','Дзед гуляе з унукам у шахматы.','Увечары сям’я сабралася за сталом.','Тата працуе за камп’ютарам.','Міша забівае цвік.','Сказ па схеме: <b>Старанная дзяўчынка чытае кнігу.</b>']},
+   {id:'128',t:'Практыкаванне 128',lines:['Запісаць сказ, які адпавядае схеме:','<b>Круглыя <u class="underS">сланечнікі</u> <u class="underP">ловяць</u> цёплыя праменьчыкі.</b>']},
+   {id:'129',t:'Практыкаванне 129 (дамашняе)',lines:['<u class="underS">Каця</u> <u class="underP">наведвае</u> музычную школу.','<u class="underS">Дзяўчынка</u> добра <u class="underP">іграе</u> на скрыпцы.','Правапіс: у слове скрыпцы пішам ы, бо пасля зацвярдзелых ж, дж, ч, ш, р, ц заўсёды пішацца ы.']}
+  ];
+  CLEAN.forEach(function(c){
+    var el=document.createElement('div'); el.className='clean';
+    var h=document.createElement('h3'); h.textContent=c.t; el.appendChild(h);
+    var lock=document.createElement('p'); lock.className='lock'; lock.textContent='🔒 Выканай гэта практыкаванне — і тут з’явіцца, што перапісаць у сшытак.';
+    var content=document.createElement('ol'); content.hidden=true;
+    c.lines.forEach(function(l){ var li=document.createElement('li'); li.innerHTML=l; content.appendChild(li); });
+    el.appendChild(lock); el.appendChild(content); cleanHost.appendChild(el);
+    cleanBlocks[c.id]={el:el,lock:lock,content:content,opened:false};
+  });
+  var openAll=document.createElement('button'); openAll.className='b ghost'; openAll.type='button';
+  openAll.textContent='Адкрыць увесь чыставік (толькі пасля заданняў)';
+  openAll.addEventListener('click',function(){
+    CLEAN.forEach(function(c){ var b=cleanBlocks[c.id]; b.opened=true; b.el.classList.add('open'); b.lock.hidden=true; b.content.hidden=false; });
+  });
+  cleanHost.appendChild(openAll);
+  bump();
+
+  /* ---------- голас замест настаўніка ---------- */
+  var synth=window.speechSynthesis;
+  var token=0;
+  function voiceFor(u){
+    var vs=(synth.getVoices()||[]);
+    for(var i=0;i<vs.length;i++){ if(/^be/i.test(vs[i].lang)){ u.voice=vs[i]; u.lang='be-BY'; return; } }
+    for(var j=0;j<vs.length;j++){ if(/^ru/i.test(vs[j].lang)){ u.voice=vs[j]; u.lang='ru-RU'; return; } }
+    u.lang='ru-RU';
+  }
+  function speak(text,onend){
+    token++; var my=token;
+    synth.cancel();
+    var u=new SpeechSynthesisUtterance(text);
+    u.rate=0.9; voiceFor(u);
+    u.onend=function(){ if(my===token&&onend) onend(false); };
+    u.onerror=function(){ if(my===token&&onend) onend(true); };
+    setTimeout(function(){ if(my===token) synth.speak(u); },60);
+  }
+  function stopAll(){ token++; synth.cancel(); }
+
+  var LESSON=[
+   {t:'Што такое сказ і яго члены',
+    s:'Привет! Сегодня новая тема по беларускай мове: даданыя члены сказа. По-русски это второстепенные члены предложения. Слушай внимательно, а потом сделаешь задания сам. Сказ, то есть предложение, — это слова, связанные по смыслу, которые выражают законченную мысль. В каждом предложении есть основа: два главных члена. Их зовут дзейнік и выказнік.'},
+   {t:'Дзейнік і выказнік',
+    s:'Дзейнік — это подлежащее. Это то, о ком или о чём говорится в предложении. Вопросы к нему: хто? или што?. Подчёркиваем дзейнік одной чертой. Выказнік — это сказуемое. Оно говорит, что делает дзейнік. Вопросы: што робіць? што зрабіў? што рабілі?. Подчёркиваем двумя чертами. Послушай пример: Прайшоў дождж. О чём говорится? Што? Дождж. Это дзейнік, одна черта. Дождж што зрабіў? Прайшоў. Это выказнік, две черты. Вот и вся основа. Ещё примеры: Шумелі дубы. Дубы — дзейнік, шумелі — выказнік. Сонца ўзышло. Сонца — дзейнік, узышло — выказнік.'},
+   {t:'Што такое даданыя члены',
+    s:'А теперь самое главное в нашей теме. Кроме главных членов в предложении могут быть и другие слова. Они называются даданыя члены. Слушай и сравнивай. Первое предложение: Прайшоў дождж. Здесь только два слова, только главные члены. Второе: Увечары прайшоў дробны дождж. Главные члены те же самые: дождж прайшоў. Но добавились два слова: увечары и дробны. Вот они и есть даданыя члены. Зачем они нужны? Они делают предложение более полным и точным. Из первого предложения мы знаем только, что был дождь. А из второго — что он был мелкий и что прошёл он вечером. Запомни правило: акрамя галоўных членаў, у сказе могуць быць даданыя.'},
+   {t:'Тры крокі разбору',
+    s:'Как разбирать предложение? Три шага, запоминай. Шаг первый: найди, о ком или о чём говорится. Ставь вопрос хто? или што?. Это дзейнік. Шаг второй: спроси от дзейніка — што робіць? Это выказнік. Шаг третий: от главных слов ставь вопросы ко всем остальным словам. Все слова, к которым ты задал вопрос, — это даданыя члены. Разберём вместе: На ўзлеску шумелі старыя дубы. О чём говорится? Што? Дубы. Это дзейнік. Дубы што рабілі? Шумелі. Это выказнік. Теперь остальные слова. Шумелі дзе? На ўзлеску. Это даданы член. Дубы якія? Старыя. Тоже даданы член. Обрати внимание: маленькое слово на — это прыназоўнік, предлог. Отдельным членом предложения он не бывает, он идёт вместе со словом узлеску.'},
+   {t:'Як чытаць схему з падручніка',
+    s:'В учебнике есть схемы предложений. Читать их просто. Одна прямая чёрточка — это дзейнік. Двойная чёрточка — выказнік. Овал с буквами дэ че — это даданы член. Стрелка с вопросом показывает, от какого слова ставится вопрос к этому даданаму члену. Например, схема такая: овал с вопросом якая?, потом чёрточка дзейніка, потом двойная чёрточка выказніка, потом овал с вопросом што?. Какое предложение подойдёт? Старанная дзяўчынка чытае кнігу. Проверяем: старанная — это якая?, дзяўчынка — дзейнік, чытае — выказнік, кнігу — што?. Всё сошлось.'},
+   {t:'Што рабіць далей',
+    s:'А теперь переходи к упражнениям ниже. Их пять: сто дваццаць чатыры, сто дваццаць пяць, сто дваццаць сем, сто дваццаць восем и домашнее сто дваццаць дзевяць. В каждом упражнении есть кнопка Паслухаць заданне — я объясню, что надо делать. Выполняй прямо на странице и нажимай Праверыць. Если ошибёшься, я покажу где и объясню почему. Когда упражнение выполнено верно, внизу страницы откроется чыставік — там написано, что именно переписать в тетрадь. Удачи, у тебя получится!'}
+  ];
+  var listEl=document.getElementById('lesson-list'), nowEl=document.getElementById('l-now'), noteEl=document.getElementById('l-note');
+  var li=-1, playing=false, partBtns=[];
+  LESSON.forEach(function(p,i){
+    var b=document.createElement('button'); b.type='button'; b.className='part';
+    var n=document.createElement('span'); n.className='n'; n.textContent='Частка '+(i+1);
+    var t=document.createElement('span'); t.textContent=p.t;
+    b.appendChild(n); b.appendChild(t);
+    b.addEventListener('click',function(){ playFrom(i); });
+    partBtns.push(b); listEl.appendChild(b);
+  });
+  function paint(){
+    partBtns.forEach(function(b,i){ if(i===li){ b.classList.add('now'); } else { b.classList.remove('now'); } });
+    nowEl.textContent = li<0? 'Частка не выбрана.' : (playing? 'Гучыць частка '+(li+1)+': '+LESSON[li].t : 'Спынена на частцы '+(li+1)+': '+LESSON[li].t);
+    document.getElementById('l-play').textContent = playing? '⏹ Спыніць' : (li<0? '▶ Слухаць урок' : '▶ Працягнуць');
+  }
+  function playFrom(i){
+    if(i>=LESSON.length){ playing=false; li=LESSON.length-1; paint(); noteEl.textContent='Урок скончаны. Пераходзь да практыкаванняў!'; return; }
+    li=i; playing=true; partBtns[i].classList.add('heard'); paint();
+    speak(LESSON[i].s,function(err){ if(!err&&playing){ playFrom(i+1); } else { playing=false; paint(); } });
+  }
+  document.getElementById('l-play').addEventListener('click',function(){
+    if(playing){ stopAll(); playing=false; paint(); return; }
+    playFrom(li<0?0:li);
+  });
+  document.getElementById('l-prev').addEventListener('click',function(){ playFrom(Math.max(0,li-1)); });
+  document.getElementById('l-next').addEventListener('click',function(){ playFrom(Math.min(LESSON.length-1,li+1)); });
+  paint();
+
+  var sayBtns=[].slice.call(document.querySelectorAll('[data-say]'));
+  if(!synth||!window.SpeechSynthesisUtterance){
+    sayBtns.forEach(function(b){ b.hidden=true; });
+    document.getElementById('l-play').disabled=true;
+    noteEl.textContent='На гэтай прыладзе голас недаступны — чытай тэкст вачыма.';
+  } else {
+    noteEl.textContent='Калі на прыладзе няма беларускага голасу, тлумачэнне прагучыць па-руску, а прыклады — беларускія.';
+    sayBtns.forEach(function(b){
+      var own=b.textContent;
+      b.setAttribute('data-label',own);
+      b.addEventListener('click',function(){
+        if(b.getAttribute('data-on')==='1'){ stopAll(); b.textContent=own; b.removeAttribute('data-on'); return; }
+        playing=false; paint();
+        sayBtns.forEach(function(x){ x.textContent=x.getAttribute('data-label'); x.removeAttribute('data-on'); });
+        b.textContent='⏹ Спыніць'; b.setAttribute('data-on','1');
+        speak(b.getAttribute('data-say'),function(){ b.textContent=own; b.removeAttribute('data-on'); });
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

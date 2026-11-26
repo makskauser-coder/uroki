@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3f6fc">
+<meta name="robots" content="noindex, nofollow">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}*{box-sizing:border-box}</style>
+<title>Делим десятки и единицы</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800&family=Rubik:wght@500;600;700&display=swap">
+<style>
+/* Макет: одна колонка-«тетрадь» шириной 760px; каждый шаг — карточка, числа всегда разложены на оранжевые десятки и зелёные единицы */
+:root{
+  --bg:#f3f6fc;
+  --surface:#ffffff;
+  --surface-2:#eef2fa;
+  --ink:#19223a;
+  --muted:#5e6a86;
+  --line:#dbe3f2;
+  --accent:#3550c8;
+  --accent-soft:#e3e9fd;
+  --tens:#f0a033;
+  --tens-soft:#fdeed6;
+  --units:#3aa86a;
+  --units-soft:#dff3e7;
+  --wrong:#d94a4a;
+  --wrong-soft:#fde4e4;
+  --font-head:"Rubik","Trebuchet MS",sans-serif;
+  --font-body:"Nunito","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111726; --surface:#1a2235; --surface-2:#202a41; --ink:#e9eefb; --muted:#9aa7c4;
+    --line:#2d3952; --accent:#8aa3ff; --accent-soft:#232f52;
+    --tens:#f2b45f; --tens-soft:#3a2d18; --units:#5fcb8e; --units-soft:#17331f;
+    --wrong:#ef7272; --wrong-soft:#3a1d1d; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111726; --surface:#1a2235; --surface-2:#202a41; --ink:#e9eefb; --muted:#9aa7c4;
+  --line:#2d3952; --accent:#8aa3ff; --accent-soft:#232f52;
+  --tens:#f2b45f; --tens-soft:#3a2d18; --units:#5fcb8e; --units-soft:#17331f;
+  --wrong:#ef7272; --wrong-soft:#3a1d1d; color-scheme:dark;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.55}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:flex;flex-direction:column;gap:26px}
+h1,h2,h3{font-family:var(--font-head);text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.12;letter-spacing:-.4px}
+h2{font-size:clamp(21px,4.2vw,26px);line-height:1.2}
+h3{font-size:18px}
+p{margin:0}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.lead{color:var(--muted);font-size:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.sec{display:flex;flex-direction:column;gap:14px}
+.sec-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num-badge{font-family:var(--font-head);font-weight:700;font-size:14px;background:var(--accent);color:#fff;border-radius:999px;padding:3px 11px;flex:none}
+
+/* кубики */
+.blocks{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.rod{width:92px;height:17px;border-radius:4px;background:
+  repeating-linear-gradient(90deg,var(--tens) 0 8.2px,color-mix(in srgb,var(--tens) 60%,#fff) 8.2px 9.2px);
+  border:1px solid color-mix(in srgb,var(--tens) 70%,#000 10%);flex:none}
+.cube{width:15px;height:15px;border-radius:3px;background:var(--units);border:1px solid color-mix(in srgb,var(--units) 70%,#000 15%);flex:none}
+.group{border:2px dashed var(--line);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;background:var(--surface-2)}
+.group .blocks{gap:5px}
+.groups{display:flex;flex-wrap:wrap;gap:10px}
+.cubes{display:flex;flex-wrap:wrap;gap:4px;max-width:200px}
+.capt{font-size:14px;color:var(--muted)}
+
+/* формулы */
+.formula{font-family:var(--font-head);font-size:clamp(19px,4.6vw,26px);font-weight:600;letter-spacing:.2px;display:flex;flex-wrap:wrap;align-items:center;gap:.3em;font-variant-numeric:tabular-nums}
+.t{color:var(--tens);background:var(--tens-soft);border-radius:7px;padding:0 .22em}
+.u{color:var(--units);background:var(--units-soft);border-radius:7px;padding:0 .22em}
+.res{color:var(--accent);background:var(--accent-soft);border-radius:7px;padding:0 .22em}
+.step{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start}
+.step .dot{width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-family:var(--font-head);font-weight:700;display:grid;place-items:center;font-size:15px}
+.step p{min-width:0}
+.note{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;padding:12px 14px;font-size:16px}
+.warn{background:var(--tens-soft);border-left:4px solid var(--tens);border-radius:0 12px 12px 0;padding:12px 14px;font-size:16px}
+.say{background:var(--surface-2);border-radius:14px;padding:12px 14px;font-size:16px}
+.say b{color:var(--accent)}
+button.saybtn{align-self:flex-start;font-size:14px;padding:7px 13px}
+
+/* поля ввода */
+input.cell{width:2.9em;min-width:0;text-align:center;font-family:var(--font-head);font-weight:600;font-size:.92em;padding:.18em .1em;border:2px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink);font-variant-numeric:tabular-nums}
+input.cell:focus{outline:3px solid var(--accent);outline-offset:1px}
+input.cell.ok{border-color:var(--units);background:var(--units-soft);color:var(--units)}
+input.cell.bad{border-color:var(--wrong);background:var(--wrong-soft);color:var(--wrong)}
+.btns{display:flex;gap:9px;flex-wrap:wrap}
+button.b{font-family:var(--font-head);font-weight:600;font-size:15px;border-radius:11px;padding:10px 16px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.b.ghost{background:transparent;color:var(--accent)}
+button.b:focus-visible{outline:3px solid var(--tens);outline-offset:2px}
+.msg{font-weight:700;font-size:16px;min-height:1.5em}
+.msg.ok{color:var(--units)}
+.msg.bad{color:var(--wrong)}
+.streak{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* тренажёр */
+.trainer{background:var(--surface);border:2px solid var(--accent);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.modes{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--font-head);font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);border-radius:999px;padding:7px 14px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* задания */
+.tasks{display:flex;flex-direction:column;gap:14px}
+.task h3{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
+.task .tick{font-size:15px;color:var(--units)}
+.item{display:flex;flex-direction:column;gap:6px;padding:11px 0;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:none;padding-top:2px}
+.item .row{display:flex;flex-wrap:wrap;align-items:center;gap:9px;font-family:var(--font-head);font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
+.item .row .qt{min-width:0}
+input.ansbox{width:3.8em;text-align:center;font-family:var(--font-head);font-weight:700;font-size:18px;padding:5px 2px;border:2px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--ink);font-variant-numeric:tabular-nums}
+input.ansbox:focus{outline:3px solid var(--accent);outline-offset:1px}
+input.ansbox.ok{border-color:var(--units);background:var(--units-soft);color:var(--units)}
+input.ansbox.bad{border-color:var(--wrong);background:var(--wrong-soft);color:var(--wrong)}
+.item .unit{font-family:var(--font-body);font-weight:400;color:var(--muted);font-size:15px}
+.fb{font-size:15.5px;line-height:1.5;border-radius:10px;padding:9px 12px}
+.fb.ok{background:var(--units-soft);color:var(--units);font-weight:700}
+.fb.bad{background:var(--wrong-soft);color:var(--wrong)}
+.fb.tip{background:var(--accent-soft);color:var(--accent)}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+button.opt{font-family:var(--font-head);font-weight:600;font-size:15px;border:2px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:11px;padding:8px 14px;cursor:pointer;text-align:left}
+button.opt.ok{border-color:var(--units);background:var(--units-soft);color:var(--units)}
+button.opt.bad{border-color:var(--wrong);background:var(--wrong-soft);color:var(--wrong)}
+.progress{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--accent);color:#fff;border-radius:999px;padding:9px 16px;font-family:var(--font-head);font-weight:600;font-size:15px;display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums;box-shadow:0 4px 14px rgba(0,0,0,.14)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.mini{background:var(--surface-2);border-radius:12px;padding:10px 12px;min-width:0}
+.mini .lbl{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.q{color:var(--muted);font-size:15px}
+footer{color:var(--muted);font-size:14px;text-align:center;padding-top:6px}
+@media (prefers-reduced-motion:no-preference){.pop{animation:pop .25s ease}}
+@keyframes pop{from{transform:scale(.96);opacity:.5}to{transform:scale(1);opacity:1}}
+
+.rounds{display:flex;flex-wrap:wrap;gap:8px}
+button.round{font-family:var(--font-head);font-weight:700;font-size:17px;border:2px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:11px;padding:9px 15px;cursor:pointer;font-variant-numeric:tabular-nums}
+button.round:hover{border-color:var(--accent)}
+button.round.ok{border-color:var(--units);background:var(--units-soft);color:var(--units)}
+button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:var(--wrong);opacity:.65}
+.wstep{display:flex;flex-direction:column;gap:9px;padding:13px 0;border-top:1px dashed var(--line)}
+.wstep:first-child{border-top:none;padding-top:4px}
+.wlab{font-family:var(--font-head);font-weight:600;font-size:16.5px}
+.ladder{display:flex;flex-direction:column;gap:6px}
+.rung{font-family:var(--font-head);font-weight:600;border-radius:11px;padding:9px 14px;font-size:16px;font-variant-numeric:tabular-nums}
+.rung.no{background:var(--wrong-soft);color:var(--wrong)}
+.rung.yes{background:var(--units-soft);color:var(--units)}
+.rung.rest{background:var(--accent-soft);color:var(--accent)}
+.cheat{display:flex;flex-wrap:wrap;gap:7px}
+.cnum{font-family:var(--font-head);font-weight:700;font-size:17px;border-radius:10px;padding:8px 12px;background:var(--surface-2);color:var(--muted);border:2px solid var(--line);font-variant-numeric:tabular-nums}
+.cnum.yes{background:var(--units-soft);color:var(--units);border-color:var(--units)}
+</style>
+</head>
+<body>
+<div class="homebar"><a href="./">← Все уроки</a></div>
+<style>.homebar{max-width:820px;margin:0 auto;padding:14px max(16px,env(safe-area-inset-left,0px)) 0}
+.homebar a{display:inline-block;font:600 15px/1 Rubik,system-ui,sans-serif;color:#3550c8;text-decoration:none;background:#e3e9fd;border:1px solid #dbe3f2;border-radius:999px;padding:9px 14px}</style>
+
+
+<div class="wrap">
+
+  <header class="sec">
+    <p class="eyebrow">Урок 46 · Математика, 3 класс</p>
+    <h1>Делим двузначное число на однозначное</h1>
+    <p class="lead">Один приём, две картинки и задания с проверкой. Правило всего одно: <b>большое число разбиваем на два удобных кусочка</b> — отдельно десятки, отдельно единицы.</p>
+  </header>
+
+  <section class="card">
+    <h2>Главная мысль</h2>
+    <p>Делить сразу 48 конфет на 4 тарелки — трудно. А если конфеты лежат пачками по 10 и отдельными штучками — легко: сначала раскладываем по тарелкам пачки, потом штучки.</p>
+    <div class="formula"><span class="res">48</span> : 4 = ( <span class="t">40</span> + <span class="u">8</span> ) : 4 = <span class="t">10</span> + <span class="u">2</span> = <span class="res">12</span></div>
+    <p class="capt"><span class="t">Оранжевое</span> — десятки (пачки по 10). <span class="u">Зелёное</span> — единицы (отдельные кубики).</p>
+    <button class="b ghost saybtn" type="button" data-say="Привет! Сегодня учимся делить двузначное число на однозначное. Представь сорок восемь конфет. Они лежат так: четыре пачки по десять штук и восемь штучек отдельно. Надо разделить их поровну на четыре тарелки. Сразу сорок восемь делить трудно. А по частям — легко. Сначала раскладываем пачки, потом штучки.">🔊 Слушать объяснение</button>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="num-badge">1</span><h2>Лёгкий случай: 48 : 4</h2></div>
+    <div class="card">
+      <p><b>Было:</b> 4 пачки по 10 и 8 кубиков.</p>
+      <div class="blocks" id="v1-before"></div>
+      <p><b>Раскладываем на 4 равные части:</b></p>
+      <div class="groups" id="v1-after"></div>
+      <div class="note">В каждой части <b>1 пачка и 2 кубика</b> — это 10 + 2 = <b>12</b>.</div>
+      <div class="step"><span class="dot">1</span><p>Разбиваю число: <b>48 = <span class="t">40</span> + <span class="u">8</span></b>. Оба кусочка делятся на 4.</p></div>
+      <div class="step"><span class="dot">2</span><p>Делю каждый кусочек: <b><span class="t">40</span> : 4 = <span class="t">10</span></b> и <b><span class="u">8</span> : 4 = <span class="u">2</span></b>.</p></div>
+      <div class="step"><span class="dot">3</span><p>Складываю ответы: <b>10 + 2 = <span class="res">12</span></b>.</p></div>
+      <div class="say"><b>Скажи вслух так:</b> «Сорок разделить на четыре — десять. Восемь разделить на четыре — два. Десять плюс два — двенадцать».</div>
+      <button class="b ghost saybtn" type="button" data-say="Разбираем пример сорок восемь разделить на четыре. Шаг первый: разбиваю число на удобные слагаемые. Сорок восемь — это сорок плюс восемь. Проверяю: сорок делится на четыре, и восемь делится на четыре. Отлично. Шаг второй: делю каждое слагаемое отдельно. Сорок разделить на четыре — десять. Восемь разделить на четыре — два. Шаг третий: складываю результаты. Десять плюс два — двенадцать. Значит, сорок восемь разделить на четыре равно двенадцать. Проверим умножением: двенадцать умножить на четыре — сорок восемь. Верно.">🔊 Слушать объяснение</button>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="num-badge">2</span><h2>Трудный случай: 57 : 3</h2></div>
+    <div class="card">
+      <p>Разбить на 50 и 7 <b>не получится</b>: ни 50, ни 7 на 3 не делятся. Смотрим на кубики — 5 пачек на 3 части поровну не разложить.</p>
+      <div class="blocks" id="v2-before"></div>
+      <div class="warn">Тогда <b>размениваем лишние пачки на кубики</b>. Берём не 5 десятков, а <b>3 десятка</b> (30 делится на 3!), а остальные 2 десятка превращаем в 20 кубиков: 20 + 7 = <b>27</b>.</div>
+      <div class="formula"><span class="res">57</span> = <span class="t">30</span> + <span class="u">27</span></div>
+      <div class="blocks" id="v2-mid"></div>
+      <p><b>Теперь делим на 3 части:</b></p>
+      <div class="groups" id="v2-after"></div>
+      <div class="formula"><span class="res">57</span> : 3 = ( <span class="t">30</span> + <span class="u">27</span> ) : 3 = <span class="t">10</span> + <span class="u">9</span> = <span class="res">19</span></div>
+      <div class="note"><b>Как подобрать первый кусочек?</b> Называй круглые числа вниз от своего: 50 — не делится на 3, 40 — не делится, <b>30 — делится!</b> Вот оно. Второй кусочек получаем вычитанием: 57 − 30 = 27.</div>
+      <div class="say"><b>Скажи вслух так:</b> «Тридцать разделить на три — десять. Двадцать семь разделить на три — девять. Десять плюс девять — девятнадцать».</div>
+      <button class="b ghost saybtn" type="button" data-say="А теперь трудный случай: пятьдесят семь разделить на три. Попробуем разбить как обычно: пятьдесят плюс семь. Но стоп — пятьдесят на три не делится, и семь на три не делится. Так нельзя. Что делаем? Ищем круглое число, которое делится на три. Называем вниз: пятьдесят — не делится, сорок — не делится, тридцать — делится! Берём тридцать. А второе слагаемое получим вычитанием: пятьдесят семь минус тридцать — двадцать семь. Теперь делим. Тридцать разделить на три — десять. Двадцать семь разделить на три — девять. Складываем: десять плюс девять — девятнадцать. Проверка: девятнадцать умножить на три — пятьдесят семь. Всё сошлось.">🔊 Слушать объяснение</button>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="num-badge">3</span><h2>Самое трудное: на что раскладывать?</h2></div>
+
+    <div class="card">
+      <h3>Выбирать надо только одно число</h3>
+      <div class="note"><b>Первое слагаемое — всегда круглое</b> (10, 20, 30, 40, 50, 60, 70, 80, 90).<br><b>Второе слагаемое не выбирают</b> — его получают вычитанием: что осталось, то и есть.</div>
+      <p>Главный секрет: смотри не на всё число, а на <b>количество десятков</b>. В числе 57 — <b>5 десятков</b>. Вопрос простой: сколько десятков можно разделить на 3 поровну?</p>
+      <div class="ladder">
+        <div class="rung no">5 десятков : 3 — не делится. Значит 50 не подходит.</div>
+        <div class="rung no">4 десятка : 3 — не делится. Значит 40 не подходит.</div>
+        <div class="rung yes">3 десятка : 3 = 1 десяток. Подходит! Берём 30.</div>
+        <div class="rung rest">Второе слагаемое: 57 − 30 = 27.</div>
+      </div>
+      <p class="capt">Идём сверху вниз и останавливаемся на первом, которое делится. Дальше считать уже легко.</p>
+      <button class="b ghost saybtn" type="button" data-say="Самое трудное в этой теме — понять, на что раскладывать. Запомни: выбирать надо только одно число, первое. Оно всегда круглое: десять, двадцать, тридцать, сорок, пятьдесят и так далее. Второе слагаемое не выбирают вообще — его получают вычитанием. Что осталось, то и есть. А выбирать первое число надо так. Смотри не на всё число, а на количество десятков. Например, пятьдесят семь разделить на три. В числе пятьдесят семь пять десятков. Спрашиваем: пять десятков разделить на три — делится? Нет. Берём на один десяток меньше: четыре десятка на три — делится? Нет. Ещё меньше: три десятка на три — делится! Три разделить на три — один. Значит первое слагаемое — тридцать. А второе получаем вычитанием: пятьдесят семь минус тридцать — двадцать семь. Всё, разложили.">🔊 Паслушать</button>
+    </div>
+
+    <div class="card">
+      <h3>Шпаргалка: какое круглое число подходит</h3>
+      <p class="capt">Нажми на делитель — увидишь, какие круглые числа можно брать первым слагаемым.</p>
+      <div class="modes" id="cheat-d"></div>
+      <div class="cheat" id="cheat"></div>
+      <p class="capt" id="cheat-why"></p>
+    </div>
+
+    <div class="card">
+      <h3>Разменный автомат</h3>
+      <p>Вот почему круглое число иногда приходится брать поменьше. Пачку из 10 всегда можно разменять на 10 отдельных кубиков — число от этого не изменится, а делить станет можно.</p>
+      <div class="formula" id="exch-f"></div>
+      <div class="blocks" id="exch-v"></div>
+      <div class="note" id="exch-msg"></div>
+      <div class="btns">
+        <button class="b" id="exch-go">Разменять пачку на 10 кубиков</button>
+        <button class="b ghost" id="exch-reset">Сначала</button>
+        <button class="b ghost" id="exch-new">Другой пример</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Тренировка: только выбрать число</h3>
+      <p class="capt">Делить пока не надо. Просто выбери первое слагаемое — и всё.</p>
+      <div class="formula" id="pk-task"></div>
+      <div class="rounds" id="pk-opts"></div>
+      <div class="msg" id="pk-msg">&nbsp;</div>
+      <p class="streak" id="pk-streak">Верно подряд: 0</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Памятка — повесь у стола</h2>
+    <div class="step"><span class="dot">1</span><p><b>Разбиваю</b> двузначное число на сумму двух удобных слагаемых, каждое из которых делится на делитель. Первое слагаемое — круглое (десятки).</p></div>
+    <div class="step"><span class="dot">2</span><p><b>Делю</b> каждое слагаемое отдельно.</p></div>
+    <div class="step"><span class="dot">3</span><p><b>Складываю</b> полученные результаты.</p></div>
+    <div class="note"><b>Проверка умножением:</b> умножь ответ на делитель — должно получиться исходное число. 19 · 3 = 57 ✓</div>
+    <div class="grid2">
+      <div class="mini"><div class="lbl">Круглые числа, которые делятся на…</div>
+        <p class="capt">на 2: 20 40 60 80<br>на 3: 30 60 90<br>на 4: 40 80<br>на 5: 50<br>на 6: 60<br>на 7: 70<br>на 8: 80<br>на 9: 90</p></div>
+      <div class="mini"><div class="lbl">Частая ошибка</div>
+        <p class="capt">Разбить как попало: 57 = 50 + 7. Проверь: <b>оба</b> кусочка обязаны делиться на делитель. Если нет — бери круглое число поменьше.</p></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="num-badge">4</span><h2>Тренажёр по шагам</h2></div>
+    <p class="lead">Здесь не надо заполнять всё сразу. Один шаг — один вопрос. Следующий появится, когда ответишь на этот.</p>
+    <div class="trainer">
+      <div class="modes" role="group" aria-label="Уровень">
+        <button class="chip" id="m-easy" aria-pressed="true">Лёгкие</button>
+        <button class="chip" id="m-hard" aria-pressed="false">Потруднее</button>
+        <button class="chip" id="m-mix" aria-pressed="false">Вперемешку</button>
+      </div>
+      <div class="formula" id="task"></div>
+      <div id="wz"></div>
+      <div class="btns"><button class="b ghost" id="next">Другой пример</button></div>
+      <p class="streak" id="streak">Решено примеров: 0</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="num-badge">5</span><h2>Задания урока 46</h2></div>
+    <p class="lead">Ответов здесь нет — впиши свой и нажми «Проверить». Если ошибся, подскажу шаг за шагом, пока не получится.</p>
+    <div class="progress" id="progress"><span>Решено заданий</span><span id="progress-n">0 из 0</span></div>
+    <div class="tasks" id="tasks"></div>
+  </section>
+
+  <section class="card">
+    <h2>Что говорить ребёнку</h2>
+    <p class="capt">Короткий сценарий на 5 минут — по нему можно вести разговор даже по телефону. Или включи кнопку ниже: страница прочитает объяснение вслух.</p>
+    <button class="b ghost saybtn" type="button" data-say="Представь сорок восемь конфет. Они лежат так: четыре пачки по десять штук и восемь штучек отдельно. Надо разделить поровну на четыре тарелки. Сначала раскладываем пачки: сорок разделить на четыре — десять. На каждой тарелке по пачке. Теперь штучки: восемь разделить на четыре — два. Сколько на тарелке? Десять и ещё два — двенадцать. А если пятьдесят семь на три? Пять пачек на три тарелки поровну не разложишь. Что делать? Разменять лишние пачки на штучки. Оставим три пачки — это тридцать, оно делится на три. А остальное: пятьдесят семь минус тридцать — двадцать семь. Теперь тридцать разделить на три — десять, и двадцать семь разделить на три — девять. Всего девятнадцать. Запомни главный вопрос, который надо задавать себе каждый раз: какое круглое число, не больше моего, делится на делитель? И в конце всегда проверяй умножением.">🔊 Слушать объяснение</button>
+    <div class="say"><b>1.</b> «Представь 48 конфет. Они лежат так: 4 пачки по 10 штук и 8 штучек отдельно. Надо разделить поровну на 4 тарелки.»</div>
+    <div class="say"><b>2.</b> «Сначала раскладываем пачки: 40 : 4 = 10. На каждой тарелке по пачке. Теперь штучки: 8 : 4 = 2. Сколько на тарелке? 10 и ещё 2 — двенадцать.»</div>
+    <div class="say"><b>3.</b> «А если 57 на 3? Пять пачек на три тарелки поровну не разложишь. Что делать? Разменять лишние пачки на штучки. Оставим 3 пачки — 30, это делится на 3. А остальное: 57 − 30 = 27. Теперь 30 : 3 = 10 и 27 : 3 = 9. Всего 19.»</div>
+    <div class="say"><b>4.</b> Главный вопрос, который ребёнок должен научиться задавать себе: <b>«Какое круглое число, не больше моего, делится на делитель?»</b> Называем вслух сверху вниз: 50 — нет, 40 — нет, 30 — да.</div>
+    <div class="say"><b>5.</b> В конце — проверка умножением: «19 · 3 — это 57? Да. Значит, решили правильно.»</div>
+  </section>
+
+  <footer>Урок 46 · деление двузначного числа на однозначное</footer>
+</div>
+
+<script>
+(function(){
+  /* ---------- картинки с кубиками ---------- */
+  function rod(){ var d=document.createElement('div'); d.className='rod'; return d; }
+  function cube(){ var d=document.createElement('div'); d.className='cube'; return d; }
+  function fill(el,tens,units,maxw){
+    if(!el) return;
+    el.textContent='';
+    var box=document.createElement('div'); box.className='blocks';
+    for(var i=0;i<tens;i++) box.appendChild(rod());
+    var cs=document.createElement('div'); cs.className='cubes';
+    if(maxw) cs.style.maxWidth=maxw;
+    for(var j=0;j<units;j++) cs.appendChild(cube());
+    if(units) box.appendChild(cs);
+    el.appendChild(box);
+  }
+  function groups(el,n,tens,units,label){
+    if(!el) return;
+    el.textContent='';
+    for(var g=0;g<n;g++){
+      var gr=document.createElement('div'); gr.className='group';
+      var inner=document.createElement('div');
+      fill(inner,tens,units,'105px');
+      gr.appendChild(inner.firstChild);
+      var c=document.createElement('div'); c.className='capt'; c.textContent=label;
+      gr.appendChild(c);
+      el.appendChild(gr);
+    }
+  }
+  fill(document.getElementById('v1-before'),4,8);
+  groups(document.getElementById('v1-after'),4,1,2,'10 + 2 = 12');
+  fill(document.getElementById('v2-before'),5,7);
+  fill(document.getElementById('v2-mid'),3,27,'220px');
+  groups(document.getElementById('v2-after'),3,1,9,'10 + 9 = 19');
+
+  /* ---------- общее ---------- */
+  function splitNum(n,d){
+    var t=Math.floor(n/10), a=0;
+    for(var i=t;i>=1;i--){ if(i%d===0){ a=i; break; } }
+    return {T:a*10, R:n-a*10};
+  }
+  function isEasy(n,d){ return (Math.floor(n/10)%d===0) && (n%10%d===0); }
+  function get(id){ return document.getElementById(id); }
+  function makeEx(mode){
+    for(var guard=0;guard<500;guard++){
+      var d=2+Math.floor(Math.random()*8);
+      var qmax=Math.floor(99/d);
+      if(qmax<11) continue;
+      var q=11+Math.floor(Math.random()*(qmax-10));
+      var n=d*q;
+      if(n<20) continue;
+      var easy=isEasy(n,d);
+      if(mode==='easy'&&!easy) continue;
+      if(mode==='hard'&&easy) continue;
+      var sp=splitNum(n,d);
+      if(sp.T===0) continue;
+      return {n:n,d:d,T:sp.T,R:sp.R,q1:sp.T/d,q2:sp.R/d,ans:q};
+    }
+    return {n:48,d:4,T:40,R:8,q1:10,q2:2,ans:12};
+  }
+
+  /* ---------- шпаргалка ---------- */
+  var cheatD=get('cheat-d'), cheatEl=get('cheat'), cheatWhy=get('cheat-why'), curD=3;
+  function drawCheat(){
+    cheatEl.textContent='';
+    var good=[];
+    for(var t=1;t<=9;t++){
+      var c=document.createElement('span'); c.className='cnum'+(t%curD===0?' yes':''); c.textContent=t*10;
+      if(t%curD===0) good.push(t*10);
+      cheatEl.appendChild(c);
+    }
+    cheatWhy.innerHTML='На '+curD+' подходят: <b>'+good.join(', ')+'</b>. Проверка простая: '+good[0]/10+' десятков : '+curD+' = '+(good[0]/10/curD)+', значит '+good[0]+' : '+curD+' = '+(good[0]/curD)+'. Серые числа не делятся — их первым слагаемым брать нельзя.';
+    [].slice.call(cheatD.children).forEach(function(b){ b.setAttribute('aria-pressed', Number(b.textContent)===curD?'true':'false'); });
+  }
+  for(var dd=2;dd<=9;dd++){ (function(dd){
+    var b=document.createElement('button'); b.className='chip'; b.type='button'; b.textContent=dd;
+    b.addEventListener('click',function(){ curD=dd; drawCheat(); });
+    cheatD.appendChild(b);
+  })(dd); }
+  drawCheat();
+
+  /* ---------- разменный автомат ---------- */
+  var EX=[[57,3],[64,4],[70,5],[90,6],[96,6],[84,7],[72,6],[85,5]], exI=0, exT=0, exU=0, exN=0, exD=0;
+  function exSet(){
+    exN=EX[exI][0]; exD=EX[exI][1]; exT=Math.floor(exN/10); exU=exN%10; exDraw();
+  }
+  function exDraw(){
+    get('exch-f').innerHTML='<span class="res">'+exN+'</span> : '+exD+' &nbsp;→&nbsp; '+exN+' = <span class="t">'+(exT*10)+'</span> + <span class="u">'+exU+'</span>';
+    fill(get('exch-v'),exT,exU,'230px');
+    var m=get('exch-msg'), go=get('exch-go');
+    if(exT>0&&exT%exD===0){
+      m.innerHTML='<b>Получилось!</b> '+exT+' пачек : '+exD+' = '+(exT/exD)+' — делится. Значит '+(exT*10)+' : '+exD+' = '+(exT*10/exD)+', а '+exU+' : '+exD+' = '+(exU/exD)+'. Ответ: '+(exT*10/exD)+' + '+(exU/exD)+' = <b>'+(exN/exD)+'</b>.';
+      go.disabled=true;
+    } else if(exT===0){
+      m.innerHTML='Пачек не осталось. Нажми «Сначала» и попробуй снова.';
+      go.disabled=true;
+    } else {
+      m.innerHTML='Сейчас пачек: <b>'+exT+'</b>. Разделить '+exT+' пачек на '+exD+' поровну <b>нельзя</b>. Размени одну пачку на 10 кубиков.';
+      go.disabled=false;
+    }
+  }
+  get('exch-go').addEventListener('click',function(){ if(exT>0){ exT--; exU+=10; exDraw(); } });
+  get('exch-reset').addEventListener('click',exSet);
+  get('exch-new').addEventListener('click',function(){ exI=(exI+1)%EX.length; exSet(); });
+  exSet();
+
+  /* ---------- тренировка: выбрать слагаемое ---------- */
+  var pkCur=null, pkStreak=0;
+  function pkRender(){
+    pkCur=makeEx('mix');
+    get('pk-task').innerHTML='<span class="res">'+pkCur.n+'</span> : '+pkCur.d+' &nbsp;=&nbsp; ( <span class="t">?</span> + ... ) : '+pkCur.d;
+    var opts=get('pk-opts'); opts.textContent='';
+    var tmax=Math.floor(pkCur.n/10);
+    for(var t=1;t<=tmax;t++){ (function(t){
+      var b=document.createElement('button'); b.className='round'; b.type='button'; b.textContent=t*10;
+      b.addEventListener('click',function(){ pkPick(t,b); });
+      opts.appendChild(b);
+    })(t); }
+    get('pk-msg').innerHTML='&nbsp;'; get('pk-msg').className='msg';
+  }
+  function pkPick(t,b){
+    var m=get('pk-msg'), d=pkCur.d, n=pkCur.n;
+    if(t%d!==0){
+      b.classList.add('bad');
+      m.innerHTML='Не подходит: в числе '+(t*10)+' ровно '+t+' десятков, а '+t+' на '+d+' поровну не делится. Бери число поменьше.';
+      m.className='msg bad'; pkStreak=0; get('pk-streak').textContent='Верно подряд: 0';
+      return;
+    }
+    b.classList.add('ok');
+    var best=pkCur.T, rest=n-t*10;
+    if(t*10===best){
+      pkStreak++; get('pk-streak').textContent='Верно подряд: '+pkStreak;
+      m.innerHTML='Верно! '+t+' десятков : '+d+' = '+(t/d)+', значит '+(t*10)+' : '+d+' = '+(t*10/d)+'. А второе слагаемое — '+n+' − '+(t*10)+' = '+rest+'.';
+      m.className='msg ok';
+      setTimeout(pkRender,2600);
+    } else {
+      m.innerHTML='Тоже делится — так решать можно! Но удобнее брать самое большое подходящее: <b>'+best+'</b>.';
+      m.className='msg';
+    }
+  }
+  pkRender();
+
+  /* ---------- пошаговый тренажёр ---------- */
+  var mode='easy', cur=null, solvedN=0;
+  var taskEl=get('task'), wz=get('wz'), streakEl=get('streak');
+  function wzStep(label, correct, hints, onOk){
+    var box=document.createElement('div'); box.className='wstep';
+    var p=document.createElement('p'); p.className='wlab'; p.innerHTML=label; box.appendChild(p);
+    var row=document.createElement('div'); row.className='btns';
+    var inp=document.createElement('input'); inp.className='ansbox'; inp.type='text'; inp.inputMode='numeric';
+    inp.autocomplete='off'; inp.placeholder='?'; inp.setAttribute('aria-label',label.replace(/<[^>]+>/g,''));
+    var btn=document.createElement('button'); btn.className='b'; btn.type='button'; btn.textContent='Проверить';
+    row.appendChild(inp); row.appendChild(btn); box.appendChild(row);
+    var fb=document.createElement('div'); fb.className='fb'; fb.hidden=true; box.appendChild(fb);
+    var i=0;
+    function go(){
+      if(inp.value.trim()==='') return;
+      var v=Number(inp.value.trim());
+      if(v===correct){
+        inp.classList.add('ok'); inp.classList.remove('bad'); inp.disabled=true; btn.disabled=true;
+        fb.className='fb ok'; fb.hidden=false; fb.textContent='Верно!';
+        onOk();
+      } else {
+        inp.classList.add('bad');
+        fb.className='fb bad'; fb.hidden=false; fb.innerHTML=hints[Math.min(i,hints.length-1)]; i++;
+      }
+    }
+    btn.addEventListener('click',go);
+    inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+    inp.addEventListener('input',function(){ inp.classList.remove('bad'); });
+    wz.appendChild(box); inp.focus();
+  }
+  function wzRender(){
+    cur=makeEx(mode);
+    taskEl.innerHTML='<span class="res">'+cur.n+'</span> : '+cur.d+' = ?';
+    wz.textContent='';
+    var box=document.createElement('div'); box.className='wstep';
+    var p=document.createElement('p'); p.className='wlab';
+    p.innerHTML='Шаг 1. В числе '+cur.n+' ровно '+Math.floor(cur.n/10)+' десятков. Какое круглое число возьмём первым слагаемым?';
+    box.appendChild(p);
+    var opts=document.createElement('div'); opts.className='rounds';
+    var fb=document.createElement('div'); fb.className='fb'; fb.hidden=true;
+    var tmax=Math.floor(cur.n/10);
+    for(var t=1;t<=tmax;t++){ (function(t){
+      var b=document.createElement('button'); b.className='round'; b.type='button'; b.textContent=t*10;
+      b.addEventListener('click',function(){
+        if(t%cur.d!==0){
+          b.classList.add('bad');
+          fb.className='fb bad'; fb.hidden=false;
+          fb.innerHTML='В числе '+(t*10)+' ровно '+t+' десятков, а '+t+' на '+cur.d+' поровну не делится. Возьми число поменьше.';
+          return;
+        }
+        [].slice.call(opts.children).forEach(function(x){ x.disabled=true; });
+        b.classList.add('ok');
+        cur.T=t*10; cur.R=cur.n-cur.T; cur.q1=cur.T/cur.d; cur.q2=cur.R/cur.d;
+        fb.className='fb ok'; fb.hidden=false;
+        fb.innerHTML='Верно! '+t+' десятков : '+cur.d+' = '+(t/cur.d)+'. Первое слагаемое — '+cur.T+'.';
+        wzStep2();
+      });
+      opts.appendChild(b);
+    })(t); }
+    box.appendChild(opts); box.appendChild(fb); wz.appendChild(box);
+  }
+  function wzStep2(){
+    wzStep('Шаг 2. Сколько осталось? '+cur.n+' − '+cur.T+' = ?', cur.R,
+      ['Это вычитание: от '+cur.n+' отними '+cur.T+'.',
+       'Посчитай по частям: от '+cur.n+' убери '+cur.T+' — останется '+cur.R+'.'],
+      wzStep3);
+  }
+  function wzStep3(){
+    wzStep('Шаг 3. Делим первое слагаемое: '+cur.T+' : '+cur.d+' = ?', cur.q1,
+      ['В числе '+cur.T+' ровно '+(cur.T/10)+' десятков. Раздели десятки: '+(cur.T/10)+' : '+cur.d+' = '+(cur.T/10/cur.d)+'. Значит ответ — столько же десятков.',
+       'Ответ: '+cur.q1+'. Проверь: '+cur.q1+' · '+cur.d+' = '+cur.T+'.'],
+      wzStep4);
+  }
+  function wzStep4(){
+    wzStep('Шаг 4. Делим второе слагаемое: '+cur.R+' : '+cur.d+' = ?', cur.q2,
+      ['Проверь умножением: твой ответ, умноженный на '+cur.d+', должен дать '+cur.R+'.',
+       'Вспомни таблицу: '+cur.d+' · '+cur.q2+' = '+cur.R+'. Значит '+cur.R+' : '+cur.d+' = '+cur.q2+'.'],
+      wzStep5);
+  }
+  function wzStep5(){
+    wzStep('Шаг 5. Складываем: '+cur.q1+' + '+cur.q2+' = ?', cur.ans,
+      ['Просто сложи два числа: '+cur.q1+' и '+cur.q2+'.',
+       'Ответ: '+cur.ans+'.'],
+      wzDone);
+  }
+  function wzDone(){
+    var box=document.createElement('div'); box.className='wstep';
+    var p=document.createElement('p'); p.className='wlab';
+    p.innerHTML='Готово: <b>'+cur.n+' : '+cur.d+' = '+cur.ans+'</b>. Проверка умножением: '+cur.ans+' · '+cur.d+' = '+cur.n+'. ✓';
+    box.appendChild(p); wz.appendChild(box);
+    solvedN++; streakEl.textContent='Решено примеров: '+solvedN;
+  }
+  get('next').addEventListener('click',wzRender);
+  var chips={easy:get('m-easy'),hard:get('m-hard'),mix:get('m-mix')};
+  Object.keys(chips).forEach(function(k){
+    chips[k].addEventListener('click',function(){
+      mode=k;
+      Object.keys(chips).forEach(function(j){ chips[j].setAttribute('aria-pressed', j===k?'true':'false'); });
+      wzRender();
+    });
+  });
+  wzRender();
+
+  /* ---------- задания урока ---------- */
+  var TASKS=[
+  {t:'№ 1. Вычисли', sub:'Здесь и десятки, и единицы делятся сразу.', items:[
+    {q:'48 : 4 =', a:12, n:48, d:4, steps:['Разбей число на десятки и единицы: 48 = 40 + 8. Оба слагаемых делятся на 4.','40 : 4 = 10, а 8 : 4 = 2.','Сложи результаты: 10 + 2 = 12.']},
+    {q:'55 : 5 =', a:11, n:55, d:5, steps:['55 = 50 + 5.','50 : 5 = 10, а 5 : 5 = 1.','10 + 1 = 11.']},
+    {q:'63 : 3 =', a:21, n:63, d:3, steps:['63 = 60 + 3.','60 : 3 = 20 (6 десятков на 3 — это 2 десятка), а 3 : 3 = 1.','20 + 1 = 21.'], near:{12:'Ты сложил 10 + 2, но 60 : 3 — это 20, а не 10. Шесть десятков разделить на три — два десятка.'}},
+    {q:'84 : 2 =', a:42, n:84, d:2, steps:['84 = 80 + 4.','80 : 2 = 40, а 4 : 2 = 2.','40 + 2 = 42.']}
+  ]},
+  {t:'№ 2. Вычисли', sub:'Здесь десятки сразу не делятся — придётся разменивать.', items:[
+    {q:'57 : 3 =', a:19, n:57, d:3, steps:['50 на 3 не делится. Иди по круглым числам вниз: 50 — нет, 40 — нет, 30 — да! Значит 57 = 30 + 27.','30 : 3 = 10, а 27 : 3 = 9.','10 + 9 = 19.']},
+    {q:'64 : 4 =', a:16, n:64, d:4, steps:['60 на 4 не делится, а 40 — делится. Значит 64 = 40 + 24.','40 : 4 = 10, а 24 : 4 = 6.','10 + 6 = 16.']},
+    {q:'70 : 5 =', a:14, n:70, d:5, steps:['Бери круглое число, которое делится на 5 и меньше 70: это 50. Значит 70 = 50 + 20.','50 : 5 = 10, а 20 : 5 = 4.','10 + 4 = 14.']},
+    {q:'90 : 6 =', a:15, n:90, d:6, steps:['90 на 6 сразу не разложить. Круглое число, которое делится на 6, — это 60. Значит 90 = 60 + 30.','60 : 6 = 10, а 30 : 6 = 5.','10 + 5 = 15.']}
+  ]},
+  {t:'№ 3. Составь выражение и найди его значение', items:[
+    {q:'Сумму чисел 36 и 20 разделить на 4. Чему равно значение?', a:14, steps:['Запиши выражение со скобками: (36 + 20) : 4.','Сначала действие в скобках: 36 + 20 = 56.','Теперь 56 : 4. Разбей: 56 = 40 + 16.','40 : 4 = 10, 16 : 4 = 4, вместе 14.'], near:{9:'Похоже, ты разделил на 4 только число 36. Сначала сложи 36 и 20, а делить будешь сумму.',5:'Ты разделил только 20 на 4. В скобках сначала сложение: 36 + 20.'}},
+    {q:'Число 60 разделить на сумму чисел 2 и 3. Чему равно значение?', a:12, steps:['Запиши выражение: 60 : (2 + 3).','Сначала скобки: 2 + 3 = 5.','60 : 5 = 12, потому что 50 : 5 = 10 и 10 : 5 = 2.'], near:{30:'Ты разделил 60 на 2. Но делить надо на сумму: сначала 2 + 3.',20:'Ты разделил 60 на 3. Но делить надо на сумму: сначала 2 + 3.'}}
+  ]},
+  {t:'№ 4. Найди значения выражений', sub:'Помни порядок: сначала скобки, потом · и :, потом + и −.', items:[
+    {q:'(36 − 29) · 7 =', a:49, steps:['Сначала скобки: 36 − 29 = 7.','Теперь 7 · 7 = 49.'], near:{252:'Ты умножил 36 на 7 и забыл про скобки. Сначала вычти.'}},
+    {q:'64 : 8 · 11 =', a:88, steps:['Скобок нет, действия одной ступени — считаем слева направо: 64 : 8 = 8.','Теперь 8 · 11 = 88.'], near:{8:'Это только первое действие. Осталось умножить 8 на 11.'}},
+    {q:'4 · (17 + 5) + 12 =', a:100, steps:['Скобки: 17 + 5 = 22.','Умножение: 4 · 22 = 88.','Сложение: 88 + 12 = 100.'], near:{88:'Ты остановился на 4 · 22. Прибавь ещё 12.',136:'Похоже, ты прибавил 12 внутри скобок. 12 прибавляется в самом конце.'}},
+    {q:'5 · 16 : 40 =', a:2, steps:['Слева направо: 5 · 16 = 80.','Теперь 80 : 40 = 2.'], near:{80:'Это только умножение. Осталось разделить 80 на 40.'}},
+    {q:'(24 − 12) · 2 · 3 =', a:72, steps:['Скобки: 24 − 12 = 12.','12 · 2 = 24.','24 · 3 = 72.'], near:{24:'Ты сделал только 12 · 2. Умножь результат ещё на 3.',12:'Это только скобки. Дальше умножай на 2, потом на 3.'}},
+    {q:'48 : 6 + 5 · 10 =', a:58, steps:['Сначала умножение и деление: 48 : 6 = 8 и 5 · 10 = 50.','Потом сложение: 8 + 50 = 58.'], near:{130:'Ты считал подряд слева направо. Сначала выполняются · и :, и только потом +.'}},
+    {type:'choice', q:'По какому признаку эти выражения можно разделить на две группы?', opts:['По первому числу в выражении','Со скобками и без скобок','По тому, сколько в них чисел'], a:1,
+     steps:['Со скобками: (36 − 29) · 7, 4 · (17 + 5) + 12, (24 − 12) · 2 · 3. Без скобок: 64 : 8 · 11, 5 · 16 : 40, 48 : 6 + 5 · 10.','Подходит и другой признак: в два действия и в три действия — группы получаются такие же.']}
+  ]},
+  {t:'№ 5. Задача про кран', sub:'Пока Даша 2 мин мыла посуду, вытекло 10 л. Сколько вытечет за 5 мин?', items:[
+    {q:'Сколько литров вытекает за 1 минуту?', a:5, unit:'л', steps:['За 2 минуты вытекло 10 л. Значит за 1 минуту — в два раза меньше.','10 : 2 = 5 л.']},
+    {q:'Сколько литров вытечет за 5 минут?', a:25, unit:'л', steps:['За 1 минуту вытекает 5 л.','Значит за 5 минут: 5 · 5 = 25 л.'], near:{50:'Ты умножил 10 на 5. Но 10 л — это за 2 минуты. Сначала узнай, сколько за одну минуту.'}}
+  ]},
+  {t:'№ 6. Задача про шары (двумя способами)', sub:'В наборе 12 синих и 14 красных шаров. Сколько шаров в трёх таких наборах?', items:[
+    {q:'1 способ: (12 + 14) · 3 =', a:78, unit:'шаров', steps:['В одном наборе: 12 + 14 = 26 шаров.','В трёх наборах: 26 · 3 = 78.'], near:{26:'Это сколько шаров в одном наборе. Теперь умножь на 3.'}},
+    {q:'2 способ: 12 · 3 + 14 · 3 =', a:78, unit:'шаров', steps:['Синих во всех наборах: 12 · 3 = 36.','Красных: 14 · 3 = 42.','Вместе: 36 + 42 = 78. Ответ такой же, как в первом способе — значит, решено верно.']}
+  ]},
+  {t:'№ 7. Задача про ткань', sub:'На платье идёт 3 м, на костюм — 4 м. У швеи 18 м. Хватит ли на 3 платья и 3 костюма?', items:[
+    {q:'Сколько метров нужно на 3 платья?', a:9, unit:'м', steps:['На одно платье 3 м.','3 · 3 = 9 м.']},
+    {q:'Сколько метров нужно на 3 костюма?', a:12, unit:'м', steps:['На один костюм 4 м.','4 · 3 = 12 м.']},
+    {q:'Сколько метров нужно всего?', a:21, unit:'м', steps:['Сложи: на платья 9 м и на костюмы 12 м.','9 + 12 = 21 м.']},
+    {type:'choice', q:'Так хватит ли 18 м ткани?', opts:['Да, хватит','Нет, не хватит'], a:1,
+     steps:['Нужно 21 м, а есть только 18 м. 21 больше 18.','Не хватает 21 − 18 = 3 метров. Ответ: нет, сшить не сможет.']}
+  ]},
+  {t:'№ 8. Периметры', sub:'Прямоугольник со сторонами 2 см и 5 см и квадрат со стороной 2 см.', items:[
+    {q:'Периметр прямоугольника =', a:14, unit:'см', steps:['Периметр — это длина всех сторон вместе.','У прямоугольника две стороны по 2 см и две по 5 см: (2 + 5) · 2.','2 + 5 = 7, 7 · 2 = 14 см.'], near:{10:'Ты сложил только две стороны: 2 + 5 = 7... У прямоугольника сторон четыре.',7:'Это сумма только двух сторон. Умножь её на 2 — сторон четыре.'}},
+    {q:'Периметр квадрата =', a:8, unit:'см', steps:['У квадрата все четыре стороны одинаковые — по 2 см.','2 · 4 = 8 см.'], near:{4:'Ты сложил только две стороны. У квадрата их четыре.'}}
+  ]},
+  {t:'№ 9. Периметры фигур из задания 8', sub:'Из того же прямоугольника и квадрата сложили две фигуры.', items:[
+    {q:'Фигура 1 — квадрат приставили сбоку, получился прямоугольник 2 см и 7 см. Его периметр =', a:18, unit:'см', steps:['Длинная сторона стала 5 + 2 = 7 см, короткая осталась 2 см.','(2 + 7) · 2 = 9 · 2 = 18 см.'], near:{22:'Ты сложил два периметра: 14 + 8 = 22. Но две стороны по 2 см оказались внутри фигуры, их не обводят: 22 − 2 − 2 = 18.'}},
+    {q:'Фигура 2 — квадрат приставили снизу, получилась ступенька. Её периметр =', a:18, unit:'см', steps:['Обойди фигуру по краю и складывай стороны: 5 + 2 + 3 + 2 + 2 + 4.','Получится 18 см.','Интересно: фигуры разные, а периметры одинаковые. Потому что в обоих случаях спряталась внутри одна и та же общая сторона 2 см.'], near:{22:'Это 14 + 8. Но общая сторона в 2 см спряталась внутри фигуры дважды: 22 − 4 = 18.'}}
+  ]},
+  {t:'? Объясни, как разделить', sub:'Это вопрос из рамки в учебнике.', items:[
+    {q:'48 : 2 =', a:24, n:48, d:2, steps:['48 = 40 + 8.','40 : 2 = 20, а 8 : 2 = 4.','20 + 4 = 24.']},
+    {q:'48 : 3 =', a:16, n:48, d:3, steps:['40 на 3 не делится! Иди вниз: 40 — нет, 30 — да. Значит 48 = 30 + 18.','30 : 3 = 10, а 18 : 3 = 6.','10 + 6 = 16.'], near:{24:'Это ответ для деления на 2. Здесь делим на 3, и разбивать надо по-другому: 30 + 18.'}}
+  ]},
+  {t:'Дома № 1. Вычисли', items:[
+    {q:'24 : 2 =', a:12, n:24, d:2, steps:['24 = 20 + 4.','20 : 2 = 10, а 4 : 2 = 2.','10 + 2 = 12.']},
+    {q:'66 : 6 =', a:11, n:66, d:6, steps:['66 = 60 + 6.','60 : 6 = 10, а 6 : 6 = 1.','10 + 1 = 11.']},
+    {q:'96 : 6 =', a:16, n:96, d:6, steps:['90 на 6 не делится, а 60 — делится. Значит 96 = 60 + 36.','60 : 6 = 10, а 36 : 6 = 6.','10 + 6 = 16.']},
+    {q:'70 : 2 =', a:35, n:70, d:2, steps:['В числе 70 семь десятков, а 7 на 2 не делится. Возьми 60: 70 = 60 + 10.','60 : 2 = 30, а 10 : 2 = 5.','30 + 5 = 35.']}
+  ]},
+  {t:'Дома № 2. Задача про кубики', sub:'В коробке 8 больших и 16 маленьких кубиков. Сколько кубиков в четырёх таких коробках?', items:[
+    {q:'Сколько кубиков в одной коробке?', a:24, unit:'кубика', steps:['Сложи большие и маленькие.','8 + 16 = 24.']},
+    {q:'Сколько кубиков в четырёх коробках?', a:96, unit:'кубиков', steps:['В одной коробке 24 кубика.','24 · 4 = 96. Можно и так: 8 · 4 + 16 · 4 = 32 + 64 = 96.'], near:{32:'Ты посчитал только большие кубики: 8 · 4. Маленькие тоже надо учесть.',64:'Ты посчитал только маленькие кубики: 16 · 4. Большие тоже считаем.'}}
+  ]}
+  ];
+
+  var tasksEl=document.getElementById('tasks'), progEl=document.getElementById('progress-n');
+  var total=0, solved=0;
+
+  function hintsFor(it){
+    var L=[];
+    if(it.d&&it.n){
+      L.push(function(val){
+        if(!(val>0)) return 'Проверь себя умножением: ответ, умноженный на '+it.d+', должен дать '+it.n+'.';
+        var p=val*it.d;
+        return 'Проверь умножением: '+val+' · '+it.d+' = '+p+', а нужно '+it.n+'. Значит, ответ должен быть '+(p<it.n?'больше':'меньше')+'.';
+      });
+    }
+    it.steps.forEach(function(s){ L.push(function(){ return 'Подсказка: '+s; }); });
+    L.push(function(){ return 'Ответ: '+it.a+'. Ещё раз по шагам: '+it.steps.join(' '); });
+    return L;
+  }
+
+  function bump(){ progEl.textContent=solved+' из '+total; }
+
+  TASKS.forEach(function(task){
+    var card=document.createElement('section'); card.className='card task';
+    var h=document.createElement('h3'); h.textContent=task.t; card.appendChild(h);
+    if(task.sub){ var sp=document.createElement('p'); sp.className='q'; sp.textContent=task.sub; card.appendChild(sp); }
+    var states=[];
+
+    task.items.forEach(function(it){
+      total++;
+      var st={i:0, done:false, hints:hintsFor(it)};
+      states.push(st);
+      var wrap=document.createElement('div'); wrap.className='item';
+      var row=document.createElement('div'); row.className='row';
+      var qt=document.createElement('span'); qt.className='qt'; qt.innerHTML=it.q; row.appendChild(qt);
+      var fb=document.createElement('div'); fb.className='fb'; fb.hidden=true;
+
+      function say(text,kind){ fb.textContent=text; fb.className='fb '+kind; fb.hidden=false; }
+      function win(extra){
+        if(!st.done){ st.done=true; solved++; bump(); }
+        say('Верно! '+(extra||''),'ok');
+      }
+
+      if(it.type==='choice'){
+        var opts=document.createElement('div'); opts.className='opts';
+        it.opts.forEach(function(o,oi){
+          var b=document.createElement('button'); b.type='button'; b.className='opt'; b.textContent=o;
+          b.addEventListener('click',function(){
+            if(oi===it.a){ b.classList.add('ok'); b.classList.remove('bad'); win(it.steps[0]||''); }
+            else{
+              b.classList.add('bad');
+              var f=st.hints[Math.min(st.i,st.hints.length-1)]; st.i++;
+              say('Не то. '+f(0),'bad');
+            }
+          });
+          opts.appendChild(b);
+        });
+        row.appendChild(document.createElement('br'));
+        wrap.appendChild(row); wrap.appendChild(opts); wrap.appendChild(fb);
+        st.explain=function(){ var f=st.hints[Math.min(st.i,st.hints.length-1)]; st.i++; say(f(0),'tip'); };
+      } else {
+        var inp=document.createElement('input');
+        inp.className='ansbox'; inp.type='text'; inp.inputMode='numeric'; inp.autocomplete='off';
+        inp.placeholder='?'; inp.setAttribute('aria-label',it.q.replace(/<[^>]+>/g,''));
+        row.appendChild(inp);
+        if(it.unit){ var u=document.createElement('span'); u.className='unit'; u.textContent=it.unit; row.appendChild(u); }
+        wrap.appendChild(row); wrap.appendChild(fb);
+
+        st.check=function(){
+          var raw=inp.value.trim().replace(',','.');
+          if(raw===''){ return false; }
+          var val=Number(raw);
+          if(val===it.a){
+            inp.classList.add('ok'); inp.classList.remove('bad');
+            var extra=(it.d&&it.n)? 'Проверка: '+it.a+' · '+it.d+' = '+it.n+'.' : '';
+            win(extra);
+            return true;
+          }
+          inp.classList.add('bad'); inp.classList.remove('ok');
+          if(it.near && it.near[val]!==undefined){ say(it.near[val],'bad'); return false; }
+          var f=st.hints[Math.min(st.i,st.hints.length-1)]; st.i++;
+          say('Пока не сходится. '+f(val),'bad');
+          return false;
+        };
+        st.explain=function(){
+          if(st.done) return;
+          var f=st.hints[Math.min(st.i,st.hints.length-1)]; st.i++;
+          say(f(Number(inp.value.trim())||0),'tip');
+        };
+        inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); st.check(); } });
+        inp.addEventListener('input',function(){ inp.classList.remove('bad'); });
+      }
+      card.appendChild(wrap);
+    });
+
+    var btns=document.createElement('div'); btns.className='btns';
+    var bCheck=document.createElement('button'); bCheck.className='b'; bCheck.type='button'; bCheck.textContent='Проверить';
+    var bHelp=document.createElement('button'); bHelp.className='b ghost'; bHelp.type='button'; bHelp.textContent='Не знаю — объясни';
+    var note=document.createElement('p'); note.className='q'; note.textContent='';
+    bCheck.addEventListener('click',function(){
+      var any=false, all=true;
+      states.forEach(function(s){ if(s.check){ var r=s.check(); if(r!==false||s.done) any=any||true; if(!s.done) all=false; } else if(!s.done){ all=false; } });
+      var empties=states.filter(function(s){ return s.check&&!s.done; }).length;
+      note.textContent = all? 'Задание решено полностью. Молодец!' : (empties? 'Проверил то, что заполнено.' : '');
+    });
+    bHelp.addEventListener('click',function(){ states.forEach(function(s){ if(s.explain) s.explain(); }); note.textContent='Читай подсказки и попробуй снова.'; });
+    btns.appendChild(bCheck); btns.appendChild(bHelp);
+    card.appendChild(btns); card.appendChild(note);
+    tasksEl.appendChild(card);
+  });
+  bump();
+
+  /* ---------- голос вместо учителя ---------- */
+  var synth=window.speechSynthesis;
+  var sayBtns=[].slice.call(document.querySelectorAll('[data-say]'));
+  var LBL='🔊 Слушать объяснение';
+  if(!synth||!window.SpeechSynthesisUtterance){
+    sayBtns.forEach(function(b){ b.hidden=true; });
+  } else {
+    var active=null;
+    sayBtns.forEach(function(b){
+      b.addEventListener('click',function(){
+        if(active===b&&synth.speaking){ synth.cancel(); b.textContent=LBL; active=null; return; }
+        synth.cancel();
+        sayBtns.forEach(function(x){ x.textContent=LBL; });
+        var u=new SpeechSynthesisUtterance(b.getAttribute('data-say'));
+        u.lang='ru-RU'; u.rate=0.92;
+        var vs=synth.getVoices()||[];
+        for(var i=0;i<vs.length;i++){ if(/^ru/i.test(vs[i].lang)){ u.voice=vs[i]; break; } }
+        u.onend=function(){ b.textContent=LBL; active=null; };
+        u.onerror=function(){ b.textContent=LBL; active=null; };
+        active=b; b.textContent='⏹ Остановить';
+        synth.speak(u);
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
