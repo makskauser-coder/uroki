@@ -108,3 +108,15 @@ footer{max-width:860px;margin:40px auto 0;padding:18px max(16px,env(safe-area-in
 u.underS{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
 u.underP{text-decoration:underline;text-decoration-style:double;text-underline-offset:3px}
 @media (max-width:560px){ h1{font-size:27px} .row{font-size:16.5px} }
+
+/* ---- выбор варианта: сначала выбираем, проверка отдельно ---- */
+.opt.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+/* ---- подсказка-рассуждение: три пути, надо выбрать верный ---- */
+.ways{margin-top:12px;padding:14px;border-radius:14px;background:var(--accent-soft)}
+.ways .wh{font-family:var(--font-head);font-size:15px;font-weight:600;margin:0 0 10px}
+.wayb{display:block;width:100%;text-align:left;font-family:var(--font-body);font-size:15.5px;line-height:1.45;padding:11px 13px;margin:0 0 8px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.wayb:hover{border-color:var(--accent)}
+.wayb.ok{border-color:var(--ok);background:var(--ok-soft)}
+.wayb.bad{border-color:var(--wrong);background:var(--wrong-soft)}
+.way-why{font-size:14.5px;line-height:1.45;margin:-4px 0 10px;padding:9px 13px;border-radius:10px;background:var(--surface-2)}
+.lockhint{font-size:13.5px;color:var(--muted);margin:8px 0 0}

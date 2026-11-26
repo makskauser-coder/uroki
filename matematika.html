@@ -151,8 +151,8 @@ button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:va
 .cnum{font-family:var(--font-head);font-weight:700;font-size:17px;border-radius:10px;padding:8px 12px;background:var(--surface-2);color:var(--muted);border:2px solid var(--line);font-variant-numeric:tabular-nums}
 .cnum.yes{background:var(--units-soft);color:var(--units);border-color:var(--units)}
 </style>
-<link rel="stylesheet" href="assets/uroki.css?v=3">
-<script src="assets/uroki.js?v=3"></script>
+<link rel="stylesheet" href="assets/uroki.css?v=4">
+<script src="assets/uroki.js?v=4"></script>
 </head>
 <body>
 <div class="homebar"><a href="./">← Все уроки</a></div>
@@ -557,90 +557,143 @@ button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:va
   /* ---------- задания урока ---------- */
   var TASKS=[
   {t:'№ 1. Вычисли', sub:'Здесь и десятки, и единицы делятся сразу.', items:[
-    {q:'48 : 4 =', a:12, n:48, d:4, steps:['Разбей число на десятки и единицы: 48 = 40 + 8. Оба слагаемых делятся на 4.','40 : 4 = 10, а 8 : 4 = 2.','Сложи результаты: 10 + 2 = 12.']},
-    {q:'55 : 5 =', a:11, n:55, d:5, steps:['55 = 50 + 5.','50 : 5 = 10, а 5 : 5 = 1.','10 + 1 = 11.']},
-    {q:'63 : 3 =', a:21, n:63, d:3, steps:['63 = 60 + 3.','60 : 3 = 20 (6 десятков на 3 — это 2 десятка), а 3 : 3 = 1.','20 + 1 = 21.'], near:{12:'Ты сложил 10 + 2, но 60 : 3 — это 20, а не 10. Шесть десятков разделить на три — два десятка.'}},
-    {q:'84 : 2 =', a:42, n:84, d:2, steps:['84 = 80 + 4.','80 : 2 = 40, а 4 : 2 = 2.','40 + 2 = 42.']}
+    {q:'48 : 4 =', a:12, n:48, d:4},
+    {q:'55 : 5 =', a:11, n:55, d:5},
+    {q:'63 : 3 =', a:21, n:63, d:3, near:{12:'Ты сложил 10 + 2. Посмотри ещё раз на первый кусок: сколько десятков в 60 и что будет, если разделить их на 3?'}},
+    {q:'84 : 2 =', a:42, n:84, d:2}
   ]},
   {t:'№ 2. Вычисли', sub:'Здесь десятки сразу не делятся — придётся разменивать.', items:[
-    {q:'57 : 3 =', a:19, n:57, d:3, steps:['50 на 3 не делится. Иди по круглым числам вниз: 50 — нет, 40 — нет, 30 — да! Значит 57 = 30 + 27.','30 : 3 = 10, а 27 : 3 = 9.','10 + 9 = 19.']},
-    {q:'64 : 4 =', a:16, n:64, d:4, steps:['60 на 4 не делится, а 40 — делится. Значит 64 = 40 + 24.','40 : 4 = 10, а 24 : 4 = 6.','10 + 6 = 16.']},
-    {q:'70 : 5 =', a:14, n:70, d:5, steps:['Бери круглое число, которое делится на 5 и меньше 70: это 50. Значит 70 = 50 + 20.','50 : 5 = 10, а 20 : 5 = 4.','10 + 4 = 14.']},
-    {q:'90 : 6 =', a:15, n:90, d:6, steps:['90 на 6 сразу не разложить. Круглое число, которое делится на 6, — это 60. Значит 90 = 60 + 30.','60 : 6 = 10, а 30 : 6 = 5.','10 + 5 = 15.']}
+    {q:'57 : 3 =', a:19, n:57, d:3},
+    {q:'64 : 4 =', a:16, n:64, d:4},
+    {q:'70 : 5 =', a:14, n:70, d:5},
+    {q:'90 : 6 =', a:15, n:90, d:6}
   ]},
   {t:'№ 3. Составь выражение и найди его значение', items:[
-    {q:'Сумму чисел 36 и 20 разделить на 4. Чему равно значение?', a:14, steps:['Запиши выражение со скобками: (36 + 20) : 4.','Сначала действие в скобках: 36 + 20 = 56.','Теперь 56 : 4. Разбей: 56 = 40 + 16.','40 : 4 = 10, 16 : 4 = 4, вместе 14.'], near:{9:'Похоже, ты разделил на 4 только число 36. Сначала сложи 36 и 20, а делить будешь сумму.',5:'Ты разделил только 20 на 4. В скобках сначала сложение: 36 + 20.'}},
-    {q:'Число 60 разделить на сумму чисел 2 и 3. Чему равно значение?', a:12, steps:['Запиши выражение: 60 : (2 + 3).','Сначала скобки: 2 + 3 = 5.','60 : 5 = 12, потому что 50 : 5 = 10 и 10 : 5 = 2.'], near:{30:'Ты разделил 60 на 2. Но делить надо на сумму: сначала 2 + 3.',20:'Ты разделил 60 на 3. Но делить надо на сумму: сначала 2 + 3.'}}
+    {q:'Сумму чисел 36 и 20 разделить на 4. Чему равно значение?', a:14,
+     ask:'Прочитай условие ещё раз: делят <b>сумму</b> или одно число? Если сумму — её надо посчитать первой, значит нужны скобки. Запиши выражение, а потом считай по действиям.',
+     sample:'Вот то же самое на других числах: «сумму чисел 18 и 12 разделить на 5». Пишу со скобками: (18 + 12) : 5. Сначала скобки: 18 + 12 = 30. Потом деление: 30 : 5 = 6.',
+     near:{9:'Похоже, ты разделил на 4 только число 36. Посмотри, что стоит в скобках.',5:'Ты разделил только 20. В скобках сначала сложение.'}},
+    {q:'Число 60 разделить на сумму чисел 2 и 3. Чему равно значение?', a:12,
+     ask:'Здесь сумма стоит на месте <b>делителя</b>. Значит, её считают первой и она идёт в скобки. Что окажется внутри скобок и на что в итоге делим?',
+     near:{30:'Ты разделил 60 на 2. А делить надо на сумму — посчитай сначала скобки.',20:'Ты разделил 60 на 3. А делить надо на сумму.'}}
   ]},
   {t:'№ 4. Найди значения выражений', sub:'Помни порядок: сначала скобки, потом · и :, потом + и −.', items:[
-    {q:'(36 − 29) · 7 =', a:49, steps:['Сначала скобки: 36 − 29 = 7.','Теперь 7 · 7 = 49.'], near:{252:'Ты умножил 36 на 7 и забыл про скобки. Сначала вычти.'}},
-    {q:'64 : 8 · 11 =', a:88, steps:['Скобок нет, действия одной ступени — считаем слева направо: 64 : 8 = 8.','Теперь 8 · 11 = 88.'], near:{8:'Это только первое действие. Осталось умножить 8 на 11.'}},
-    {q:'4 · (17 + 5) + 12 =', a:100, steps:['Скобки: 17 + 5 = 22.','Умножение: 4 · 22 = 88.','Сложение: 88 + 12 = 100.'], near:{88:'Ты остановился на 4 · 22. Прибавь ещё 12.',136:'Похоже, ты прибавил 12 внутри скобок. 12 прибавляется в самом конце.'}},
-    {q:'5 · 16 : 40 =', a:2, steps:['Слева направо: 5 · 16 = 80.','Теперь 80 : 40 = 2.'], near:{80:'Это только умножение. Осталось разделить 80 на 40.'}},
-    {q:'(24 − 12) · 2 · 3 =', a:72, steps:['Скобки: 24 − 12 = 12.','12 · 2 = 24.','24 · 3 = 72.'], near:{24:'Ты сделал только 12 · 2. Умножь результат ещё на 3.',12:'Это только скобки. Дальше умножай на 2, потом на 3.'}},
-    {q:'48 : 6 + 5 · 10 =', a:58, steps:['Сначала умножение и деление: 48 : 6 = 8 и 5 · 10 = 50.','Потом сложение: 8 + 50 = 58.'], near:{130:'Ты считал подряд слева направо. Сначала выполняются · и :, и только потом +.'}},
+    {q:'(36 − 29) · 7 =', a:49, ask:'Что выполняют первым, если в выражении есть скобки? Посчитай скобки, а потом смотри, что осталось.', near:{252:'Ты умножил 36 на 7 и забыл про скобки. Скобки всегда первыми.'}},
+    {q:'64 : 8 · 11 =', a:88, ask:'Скобок нет, а деление и умножение — действия одной ступени. В каком порядке их выполняют, когда они равны по силе?', near:{8:'Это только первое действие. Осталось второе.'}},
+    {q:'4 · (17 + 5) + 12 =', a:100, ask:'Здесь три действия. Назови вслух, какое первое, какое второе и какое последнее, а потом считай.', near:{88:'Ты остановился на умножении. Осталось последнее действие.',136:'Похоже, 12 попало внутрь скобок. Посмотри, где скобки закрываются.'}},
+    {q:'5 · 16 : 40 =', a:2, ask:'Скобок нет, обе операции одной ступени. Значит — слева направо. Какое действие стоит первым?', near:{80:'Это только первое действие. Осталось второе.'}},
+    {q:'(24 − 12) · 2 · 3 =', a:72, ask:'Сначала скобки. Дальше два умножения подряд — выполняй их по очереди слева направо.', near:{24:'Ты сделал только одно умножение из двух.',12:'Это только скобки. Дальше два умножения.'}},
+    {q:'48 : 6 + 5 · 10 =', a:58, ask:'Тут есть и деление с умножением, и сложение. Какие действия сильнее и выполняются раньше? Сделай сначала их, а сложение — в самом конце.', near:{130:'Похоже, ты считал подряд слева направо. Сначала · и :, потом +.'}},
     {type:'choice', q:'По какому признаку эти выражения можно разделить на две группы?', opts:['По первому числу в выражении','Со скобками и без скобок','По тому, сколько в них чисел'], a:1,
-     steps:['Со скобками: (36 − 29) · 7, 4 · (17 + 5) + 12, (24 − 12) · 2 · 3. Без скобок: 64 : 8 · 11, 5 · 16 : 40, 48 : 6 + 5 · 10.','Подходит и другой признак: в два действия и в три действия — группы получаются такие же.']}
+     ask:'Выпиши выражения в столбик и посмотри, чем они отличаются внешне. Что есть у одних и нет у других?',
+     why:'Подходит и другой признак: в два действия и в три действия — группы получаются такие же.'}
   ]},
   {t:'№ 5. Задача про кран', sub:'Пока Даша 2 мин мыла посуду, вытекло 10 л. Сколько вытечет за 5 мин?', items:[
-    {q:'Сколько литров вытекает за 1 минуту?', a:5, unit:'л', steps:['За 2 минуты вытекло 10 л. Значит за 1 минуту — в два раза меньше.','10 : 2 = 5 л.']},
-    {q:'Сколько литров вытечет за 5 минут?', a:25, unit:'л', steps:['За 1 минуту вытекает 5 л.','Значит за 5 минут: 5 · 5 = 25 л.'], near:{50:'Ты умножил 10 на 5. Но 10 л — это за 2 минуты. Сначала узнай, сколько за одну минуту.'}}
+    {q:'Сколько литров вытекает за 1 минуту?', a:5, unit:'л',
+     ask:'За 2 минуты вытекло 10 литров. За одну минуту вытечет больше или меньше? Во сколько раз? Значит, какое действие надо сделать с числом 10?'},
+    {q:'Сколько литров вытечет за 5 минут?', a:25, unit:'л',
+     ask:'Ты уже знаешь, сколько вытекает за одну минуту. Минут теперь 5 — значит, что сделать с этим числом?',
+     near:{50:'Ты умножил 10 на 5. Но 10 л — это за 2 минуты, а не за одну. Сначала узнай, сколько за одну.'}}
   ]},
   {t:'№ 6. Задача про шары (двумя способами)', sub:'В наборе 12 синих и 14 красных шаров. Сколько шаров в трёх таких наборах?', items:[
-    {q:'1 способ: (12 + 14) · 3 =', a:78, unit:'шаров', steps:['В одном наборе: 12 + 14 = 26 шаров.','В трёх наборах: 26 · 3 = 78.'], near:{26:'Это сколько шаров в одном наборе. Теперь умножь на 3.'}},
-    {q:'2 способ: 12 · 3 + 14 · 3 =', a:78, unit:'шаров', steps:['Синих во всех наборах: 12 · 3 = 36.','Красных: 14 · 3 = 42.','Вместе: 36 + 42 = 78. Ответ такой же, как в первом способе — значит, решено верно.']}
+    {q:'1 способ: (12 + 14) · 3 =', a:78, unit:'шаров',
+     ask:'Скобки первыми: сколько шаров в одном наборе? А наборов три — что сделать дальше?',
+     near:{26:'Это сколько шаров в одном наборе. Осталось второе действие.'}},
+    {q:'2 способ: 12 · 3 + 14 · 3 =', a:78, unit:'шаров',
+     ask:'Здесь считают отдельно все синие и отдельно все красные, а потом соединяют. Какие действия сильнее — умножение или сложение?'}
   ]},
   {t:'№ 7. Задача про ткань', sub:'На платье идёт 3 м, на костюм — 4 м. У швеи 18 м. Хватит ли на 3 платья и 3 костюма?', items:[
-    {q:'Сколько метров нужно на 3 платья?', a:9, unit:'м', steps:['На одно платье 3 м.','3 · 3 = 9 м.']},
-    {q:'Сколько метров нужно на 3 костюма?', a:12, unit:'м', steps:['На один костюм 4 м.','4 · 3 = 12 м.']},
-    {q:'Сколько метров нужно всего?', a:21, unit:'м', steps:['Сложи: на платья 9 м и на костюмы 12 м.','9 + 12 = 21 м.']},
+    {q:'Сколько метров нужно на 3 платья?', a:9, unit:'м', ask:'На одно платье идёт 3 метра, а платьев три. Это сложение одинаковых кусков — каким действием его записать короче?'},
+    {q:'Сколько метров нужно на 3 костюма?', a:12, unit:'м', ask:'Так же, как с платьями, только метров на один костюм другое число.'},
+    {q:'Сколько метров нужно всего?', a:21, unit:'м', ask:'У тебя есть метры на платья и метры на костюмы. Спрашивают про всё вместе.'},
     {type:'choice', q:'Так хватит ли 18 м ткани?', opts:['Да, хватит','Нет, не хватит'], a:1,
-     steps:['Нужно 21 м, а есть только 18 м. 21 больше 18.','Не хватает 21 − 18 = 3 метров. Ответ: нет, сшить не сможет.']}
+     ask:'Сравни два числа: сколько метров нужно и сколько есть у швеи. Какое больше?',
+     why:'Нужно больше, чем есть.'}
   ]},
   {t:'№ 8. Периметры', sub:'Прямоугольник со сторонами 2 см и 5 см и квадрат со стороной 2 см.', items:[
-    {q:'Периметр прямоугольника =', a:14, unit:'см', steps:['Периметр — это длина всех сторон вместе.','У прямоугольника две стороны по 2 см и две по 5 см: (2 + 5) · 2.','2 + 5 = 7, 7 · 2 = 14 см.'], near:{10:'Ты сложил только две стороны: 2 + 5 = 7... У прямоугольника сторон четыре.',7:'Это сумма только двух сторон. Умножь её на 2 — сторон четыре.'}},
-    {q:'Периметр квадрата =', a:8, unit:'см', steps:['У квадрата все четыре стороны одинаковые — по 2 см.','2 · 4 = 8 см.'], near:{4:'Ты сложил только две стороны. У квадрата их четыре.'}}
+    {q:'Периметр прямоугольника =', a:14, unit:'см',
+     ask:'Периметр — это длина всех сторон вместе. Сколько сторон у прямоугольника и сколько среди них одинаковых? Обойди фигуру пальцем по краю и считай.',
+     sample:'Вот то же самое на другой фигуре: прямоугольник 3 см и 6 см. Две стороны по 3 и две по 6. Считаю: (3 + 6) · 2 = 9 · 2 = 18 см.',
+     near:{10:'Похоже, ты сложил не все стороны. У прямоугольника их четыре.',7:'Это сумма только двух сторон. А сколько их всего?'}},
+    {q:'Периметр квадрата =', a:8, unit:'см',
+     ask:'У квадрата все стороны одинаковые. Сколько их и чему равна каждая?',
+     near:{4:'Ты сложил только две стороны. У квадрата их четыре.'}}
   ]},
   {t:'№ 9. Периметры фигур из задания 8', sub:'Из того же прямоугольника и квадрата сложили две фигуры.', items:[
-    {q:'Фигура 1 — квадрат приставили сбоку, получился прямоугольник 2 см и 7 см. Его периметр =', a:18, unit:'см', steps:['Длинная сторона стала 5 + 2 = 7 см, короткая осталась 2 см.','(2 + 7) · 2 = 9 · 2 = 18 см.'], near:{22:'Ты сложил два периметра: 14 + 8 = 22. Но две стороны по 2 см оказались внутри фигуры, их не обводят: 22 − 2 − 2 = 18.'}},
-    {q:'Фигура 2 — квадрат приставили снизу, получилась ступенька. Её периметр =', a:18, unit:'см', steps:['Обойди фигуру по краю и складывай стороны: 5 + 2 + 3 + 2 + 2 + 4.','Получится 18 см.','Интересно: фигуры разные, а периметры одинаковые. Потому что в обоих случаях спряталась внутри одна и та же общая сторона 2 см.'], near:{22:'Это 14 + 8. Но общая сторона в 2 см спряталась внутри фигуры дважды: 22 − 4 = 18.'}}
+    {q:'Фигура 1 — квадрат приставили сбоку, получился прямоугольник 2 см и 7 см. Его периметр =', a:18, unit:'см',
+     ask:'Это снова прямоугольник, только стороны у него теперь другие. Какие именно? Дальше считай периметр как обычно.',
+     near:{22:'Ты сложил два периметра. Но когда фигуры склеили, две стороны оказались внутри — их по краю не обводят.'}},
+    {q:'Фигура 2 — квадрат приставили снизу, получилась ступенька. Её периметр =', a:18, unit:'см',
+     ask:'Обойди фигуру пальцем по самому краю и называй каждую сторону вслух: 5, 2, 3, 2, 2, 4. Теперь сложи их.',
+     near:{22:'Это сумма двух периметров. Общая сторона спряталась внутри фигуры — её не обводят.'}}
   ]},
   {t:'? Объясни, как разделить', sub:'Это вопрос из рамки в учебнике.', items:[
-    {q:'48 : 2 =', a:24, n:48, d:2, steps:['48 = 40 + 8.','40 : 2 = 20, а 8 : 2 = 4.','20 + 4 = 24.']},
-    {q:'48 : 3 =', a:16, n:48, d:3, steps:['40 на 3 не делится! Иди вниз: 40 — нет, 30 — да. Значит 48 = 30 + 18.','30 : 3 = 10, а 18 : 3 = 6.','10 + 6 = 16.'], near:{24:'Это ответ для деления на 2. Здесь делим на 3, и разбивать надо по-другому: 30 + 18.'}}
+    {q:'48 : 2 =', a:24, n:48, d:2},
+    {q:'48 : 3 =', a:16, n:48, d:3, near:{24:'Это ответ для деления на 2. Здесь делитель другой — и круглый кусок придётся брать другой.'}}
   ]},
-  {t:'Дома № 1. Вычисли', items:[
-    {q:'24 : 2 =', a:12, n:24, d:2, steps:['24 = 20 + 4.','20 : 2 = 10, а 4 : 2 = 2.','10 + 2 = 12.']},
-    {q:'66 : 6 =', a:11, n:66, d:6, steps:['66 = 60 + 6.','60 : 6 = 10, а 6 : 6 = 1.','10 + 1 = 11.']},
-    {q:'96 : 6 =', a:16, n:96, d:6, steps:['90 на 6 не делится, а 60 — делится. Значит 96 = 60 + 36.','60 : 6 = 10, а 36 : 6 = 6.','10 + 6 = 16.']},
-    {q:'70 : 2 =', a:35, n:70, d:2, steps:['В числе 70 семь десятков, а 7 на 2 не делится. Возьми 60: 70 = 60 + 10.','60 : 2 = 30, а 10 : 2 = 5.','30 + 5 = 35.']}
+  {t:'Дома № 1. Вычисли', home:true, items:[
+    {q:'24 : 2 =', a:12, n:24, d:2},
+    {q:'66 : 6 =', a:11, n:66, d:6},
+    {q:'96 : 6 =', a:16, n:96, d:6},
+    {q:'70 : 2 =', a:35, n:70, d:2}
   ]},
-  {t:'Дома № 2. Задача про кубики', sub:'В коробке 8 больших и 16 маленьких кубиков. Сколько кубиков в четырёх таких коробках?', items:[
-    {q:'Сколько кубиков в одной коробке?', a:24, unit:'кубика', steps:['Сложи большие и маленькие.','8 + 16 = 24.']},
-    {q:'Сколько кубиков в четырёх коробках?', a:96, unit:'кубиков', steps:['В одной коробке 24 кубика.','24 · 4 = 96. Можно и так: 8 · 4 + 16 · 4 = 32 + 64 = 96.'], near:{32:'Ты посчитал только большие кубики: 8 · 4. Маленькие тоже надо учесть.',64:'Ты посчитал только маленькие кубики: 16 · 4. Большие тоже считаем.'}}
+  {t:'Дома № 2. Задача про кубики', home:true, sub:'В коробке 8 больших и 16 маленьких кубиков. Сколько кубиков в четырёх таких коробках?', items:[
+    {q:'Сколько кубиков в одной коробке?', a:24, unit:'кубика', ask:'В коробке лежат и большие, и маленькие. Спрашивают про все кубики одной коробки.'},
+    {q:'Сколько кубиков в четырёх коробках?', a:96, unit:'кубиков', ask:'Коробок четыре, и все одинаковые. Что сделать с числом кубиков в одной коробке?',
+     near:{32:'Ты посчитал только большие кубики. Маленькие тоже едут в коробках.',64:'Ты посчитал только маленькие кубики.'}}
   ]}
   ];
 
   var tasksEl=document.getElementById('tasks'), progEl=document.getElementById('progress-n');
   Uroki.init({id:'math-46', title:'Деление двузначного числа на однозначное', subject:'Математика', lang:'ru'});
-  function plainTxt(h){ var d=document.createElement('div'); d.innerHTML=h; return (d.textContent||'').replace(/\s+/g,' ').trim(); }
+  function plainTxt(h){ var e=document.createElement('div'); e.innerHTML=h; return (e.textContent||'').replace(/\s+/g,' ').trim(); }
   var total=0, solved=0;
-
-  function hintsFor(it){
-    var L=[];
-    if(it.d&&it.n){
-      L.push(function(val){
-        if(!(val>0)) return 'Проверь себя умножением: ответ, умноженный на '+it.d+', должен дать '+it.n+'.';
-        var p=val*it.d;
-        return 'Проверь умножением: '+val+' · '+it.d+' = '+p+', а нужно '+it.n+'. Значит, ответ должен быть '+(p<it.n?'больше':'меньше')+'.';
-      });
-    }
-    it.steps.forEach(function(s){ L.push(function(){ return 'Подсказка: '+s; }); });
-    L.push(function(){ return 'Ответ: '+it.a+'. Ещё раз по шагам: '+it.steps.join(' '); });
-    return L;
-  }
-
   function bump(){ progEl.textContent=solved+' из '+total; }
+
+  /* ---- подсказки: ведут к ответу, но не называют его ---- */
+  var SAMPLES46=[
+   {n:72,d:6,s:'Посмотри, как это делают на другом примере — <b>72 : 6</b>. Считаю десятки: в 72 их семь. Делится ли 7 на 6? Нет. Спускаюсь: 6 — делится. Значит круглый кусок это 60, а второй кусок 72 − 60 = 12. Теперь делю каждый кусок на 6 и складываю результаты.'},
+   {n:85,d:5,s:'Посмотри на другом примере — <b>85 : 5</b>. В 85 восемь десятков. 8 на 5 не делится, 7 — нет, 6 — нет, 5 — да. Значит круглый кусок это 50, а второй 85 − 50 = 35. Делю каждый кусок на 5 и складываю.'}
+  ];
+  function split46(n,d){ var t=Math.floor(n/10), a=0; for(var i=t;i>=1;i--){ if(i%d===0){ a=i; break; } } return {T:a*10, R:n-a*10}; }
+  function helpDiv46(n,d){
+    var sp=split46(n,d), T=sp.T, R=sp.R, tens=Math.floor(n/10), big=tens*10;
+    var sm=SAMPLES46[(n+d)%2];
+    if(sm.n===n && sm.d===d) sm=SAMPLES46[((n+d)+1)%2];
+    var w1 = (tens%d===0)
+      ? {s:'«'+n+' = '+T+' + '+R+'. Делю первый кусок: '+T+' : '+d+' — вот и ответ.»', ok:false,
+         why:'Первый кусок разделён верно, но ответ ещё не готов: второй кусок ('+R+') тоже надо разделить, а потом результаты сложить.'}
+      : {s:'«'+n+' = '+big+' + '+(n-big)+'. Беру самое большое круглое число.»', ok:false,
+         why:'В числе '+big+' ровно '+tens+' десятков, а '+tens+' на '+d+' поровну не делится. Значит, такой кусок не подходит — надо спускаться ниже: '+(tens-1)+' десятков, '+(tens-2)+'…'};
+    var w2 = (tens%d===0)
+      ? {s:'«Разделю по цифрам: '+Math.floor(n/10)+' : '+d+' и '+(n%10)+' : '+d+', а цифры запишу рядом.»', ok:false,
+         why:'По цифрам делить нельзя — это случайно сходится лишь иногда. Делят <b>куски числа</b>: отдельно десятки как число ('+T+'), отдельно остаток ('+R+').'}
+      : {s:'«'+n+' = '+T+' + '+R+'. Делю первый кусок: '+T+' : '+d+' — вот и ответ.»', ok:false,
+         why:'Кусок выбран правильно, но ответ ещё не готов: второй кусок ('+R+') тоже надо разделить, а потом сложить оба результата.'};
+    var w3 = {s:'«Считаю десятки: в '+n+' их '+tens+'. Ищу, сколько десятков делится на '+d+'. Нашла — получаю круглый кусок '+T+', второй кусок '+n+' − '+T+' = '+R+'. Теперь делю каждый кусок на '+d+' и складываю результаты.»', ok:true,
+              why:'Это и есть приём урока: выбираем только <b>первый, круглый</b> кусок — по числу десятков. Второй кусок не выбирают, его получают вычитанием.'};
+    var ways=[w1,w2,w3], k=(n+d)%3;
+    while(k>0){ ways.unshift(ways.pop()); k--; }
+    return {
+      ask:'Число надо разбить на два куска, и первый должен быть круглым. Но какой круглый взять? Смотри не на всё число, а на <b>количество десятков</b>: в '+n+' их '+tens+'. Делится ли '+tens+' на '+d+'? Если нет — спускайся: '+(tens-1)+', '+(tens-2)+'… Первое подходящее число десятков и даст твой круглый кусок.',
+      sample: sm.s,
+      ways: ways
+    };
+  }
+  function helpFor(it){
+    if(it.n && it.d) return helpDiv46(it.n, it.d);
+    var h={};
+    if(it.ask) h.ask=it.ask;
+    if(it.sample) h.sample=it.sample;
+    return h.ask? h : {ask:'Перечитай задание и скажи вслух: что здесь известно и что надо найти?'};
+  }
+  function rungs(h){
+    var r=[];
+    if(h.ask) r.push({t:'ask', v:h.ask});
+    if(h.sample) r.push({t:'sample', v:h.sample});
+    if(h.ways && h.ways.length) r.push({t:'ways'});
+    return r;
+  }
 
   TASKS.forEach(function(task){
     var card=document.createElement('section'); card.className='card task';
@@ -650,84 +703,104 @@ button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:va
 
     task.items.forEach(function(it){
       total++;
-      var st={i:0, done:false, hints:hintsFor(it)};
+      var help=helpFor(it), rl=rungs(help);
+      var st={hi:0, done:false, home:!!task.home};
       states.push(st);
       var wrap=document.createElement('div'); wrap.className='item';
       var row=document.createElement('div'); row.className='row';
       var qt=document.createElement('span'); qt.className='qt'; qt.innerHTML=it.q; row.appendChild(qt);
       var trk=Uroki.item(plainTxt(it.q), task.t, row);
       var fb=document.createElement('div'); fb.className='fb'; fb.hidden=true;
+      var inp=null, optBtns=null, picked=-1;
 
-      function say(text,kind){ fb.textContent=text; fb.className='fb '+kind; fb.hidden=false; }
-      function win(extra){
+      function say(text,kind){ fb.innerHTML=text; fb.className='fb '+kind; fb.hidden=false; }
+      function waysBox(){
+        if(wrap.querySelector('.ways')) return;
+        var box=document.createElement('div'); box.className='ways';
+        var hh=document.createElement('p'); hh.className='wh'; hh.textContent='Вот три рассуждения. Какое из них верное?'; box.appendChild(hh);
+        help.ways.forEach(function(w){
+          var b=document.createElement('button'); b.type='button'; b.className='wayb'; b.innerHTML=w.s;
+          var why=document.createElement('div'); why.className='way-why'; why.hidden=true;
+          why.innerHTML=(w.ok? 'Да, это верный ход мысли. ' : 'Нет, так не получится. ')+(w.why||'');
+          b.addEventListener('click',function(){ b.className='wayb '+(w.ok?'ok':'bad'); why.hidden=false; });
+          box.appendChild(b); box.appendChild(why);
+        });
+        wrap.appendChild(box);
+      }
+      function helpStep(pre){
+        pre=pre||'';
+        if(!rl.length){ say(pre+'Перечитай условие и скажи вслух, что надо найти.', pre?'bad':'tip'); return; }
+        var cur=rl[Math.min(st.hi, rl.length-1)]; st.hi++;
+        if(cur.t==='ways'){ say(pre+'Вот три рассуждения — выбери верное.', pre?'bad':'tip'); waysBox(); return; }
+        say(pre+(cur.t==='sample'? '📘 ' : '💡 ')+cur.v, pre?'bad':'tip');
+      }
+      function win(){
         if(!st.done){ st.done=true; solved++; bump(); trk.ok(it.type==='choice'? it.opts[it.a] : it.a); }
-        say('Верно! '+(extra||''),'ok');
+        var extra=(it.d&&it.n)? ' Проверка: '+it.a+' · '+it.d+' = '+it.n+'.' : (it.why? ' '+it.why : '');
+        say('Верно!'+extra,'ok');
       }
 
       if(it.type==='choice'){
         var opts=document.createElement('div'); opts.className='opts';
-        var optBtns=[];
+        optBtns=[];
         it.opts.forEach(function(o,oi){
           var b=document.createElement('button'); b.type='button'; b.className='opt'; b.textContent=o;
           optBtns.push(b);
           b.addEventListener('click',function(){
-            if(oi===it.a){ b.classList.add('ok'); b.classList.remove('bad'); win(it.steps[0]||''); }
-            else{
-              b.classList.add('bad');
-              trk.wrong(o);
-              var f=st.hints[Math.min(st.i,st.hints.length-1)]; st.i++;
-              say('Не то. '+f(0),'bad');
-              Uroki.gate(optBtns, wrap);
-            }
+            if(st.done) return;
+            picked=oi;
+            optBtns.forEach(function(x){ x.classList.remove('sel','bad'); });
+            b.classList.add('sel'); fb.hidden=true;
           });
           opts.appendChild(b);
         });
-        row.appendChild(document.createElement('br'));
         wrap.appendChild(row); wrap.appendChild(opts); wrap.appendChild(fb);
-        st.explain=function(){ if(st.done) return; trk.hint(); var f=st.hints[Math.min(st.i,st.hints.length-1)]; st.i++; say(f(0),'tip'); };
+        st.check=function(){
+          if(st.done) return true;
+          if(picked<0){ say('Сначала выбери вариант, потом нажми «Проверить».','tip'); return false; }
+          if(picked===it.a){ optBtns[picked].classList.remove('sel'); optBtns[picked].classList.add('ok'); optBtns.forEach(function(x){ x.disabled=true; }); win(); return true; }
+          optBtns[picked].classList.remove('sel'); optBtns[picked].classList.add('bad');
+          trk.wrong(it.opts[picked]);
+          if(st.home) say('Не то. Подумай ещё раз.','bad'); else helpStep('Не то. ');
+          Uroki.gate(optBtns, wrap);
+          return false;
+        };
       } else {
-        var inp=document.createElement('input');
+        inp=document.createElement('input');
         inp.className='ansbox'; inp.type='text'; inp.inputMode='numeric'; inp.autocomplete='off';
-        inp.placeholder='?'; inp.setAttribute('aria-label',it.q.replace(/<[^>]+>/g,''));
+        inp.placeholder='?'; inp.setAttribute('aria-label',plainTxt(it.q));
         row.appendChild(inp);
         if(it.unit){ var u=document.createElement('span'); u.className='unit'; u.textContent=it.unit; row.appendChild(u); }
         wrap.appendChild(row); wrap.appendChild(fb);
-
         st.check=function(){
+          if(st.done) return true;
           var raw=inp.value.trim().replace(',','.');
-          if(raw===''){ return false; }
+          if(raw===''){ say('Сначала впиши ответ.','tip'); return false; }
           var val=Number(raw);
-          if(val===it.a){
-            inp.classList.add('ok'); inp.classList.remove('bad');
-            var extra=(it.d&&it.n)? 'Проверка: '+it.a+' · '+it.d+' = '+it.n+'.' : '';
-            win(extra);
-            return true;
-          }
+          if(val===it.a){ inp.classList.add('ok'); inp.classList.remove('bad'); win(); return true; }
           inp.classList.add('bad'); inp.classList.remove('ok');
           trk.wrong(raw);
+          if(st.home) say('Пока не сходится. Проверь свои вычисления.','bad');
+          else if(it.near && it.near[val]!==undefined) say(it.near[val],'bad');
+          else helpStep('Пока не сходится. ');
           Uroki.gate([inp], wrap);
-          if(it.near && it.near[val]!==undefined){ say(it.near[val],'bad'); return false; }
-          var f=st.hints[Math.min(st.i,st.hints.length-1)]; st.i++;
-          say('Пока не сходится. '+f(val),'bad');
           return false;
         };
-        st.explain=function(){
-          if(st.done) return;
-          trk.hint();
-          var f=st.hints[Math.min(st.i,st.hints.length-1)]; st.i++;
-          say(f(Number(inp.value.trim())||0),'tip');
-        };
-        inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); st.check(); } });
+        inp.addEventListener('keydown',function(e){
+          if(e.key!=='Enter') return;
+          e.preventDefault();
+          var all=[].slice.call(card.querySelectorAll('input.ansbox')).filter(function(x){ return !x.readOnly; });
+          var k=all.indexOf(inp);
+          if(k>=0 && all[k+1]) all[k+1].focus(); else inp.blur();
+        });
         inp.addEventListener('input',function(){ inp.classList.remove('bad'); });
       }
+      st.explain=function(){ if(st.done) return; trk.hint(); helpStep(''); };
+
       if(trk.restored && !st.done){
         st.done=true; solved++; bump(); trk.badge();
-        if(it.type==='choice'){
-          if(optBtns && optBtns[it.a]) optBtns[it.a].classList.add('ok');
-          if(optBtns) optBtns.forEach(function(b){ b.disabled=true; });
-        } else if(inp){
-          inp.value=String(it.a); inp.classList.add('ok'); inp.readOnly=true;
-        }
+        if(it.type==='choice'){ if(optBtns[it.a]) optBtns[it.a].classList.add('ok'); optBtns.forEach(function(b){ b.disabled=true; }); }
+        else { inp.value=String(it.a); inp.classList.add('ok'); inp.readOnly=true; }
         say('Это ты уже решила раньше — ответ сохранён.','ok');
       } else if(trk.hadError){
         say('В прошлый раз здесь была ошибка. Попробуй ещё раз.'+(trk.rec.wrong? ' Прошлый ответ: '+trk.rec.wrong : ''),'tip');
@@ -736,18 +809,27 @@ button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:va
     });
 
     var btns=document.createElement('div'); btns.className='btns';
-    var bCheck=document.createElement('button'); bCheck.className='b'; bCheck.type='button'; bCheck.textContent='Проверить';
-    var bHelp=document.createElement('button'); bHelp.className='b ghost'; bHelp.type='button'; bHelp.textContent='Не знаю — объясни';
+    var bCheck=document.createElement('button'); bCheck.className='b'; bCheck.type='button'; bCheck.textContent='🔒 Проверить';
+    var bHelp=document.createElement('button'); bHelp.className='b ghost'; bHelp.type='button'; bHelp.textContent='Подумать вместе';
     var note=document.createElement('p'); note.className='q'; note.textContent='';
+    function runCheck(){
+      var all=true;
+      states.forEach(function(s){ if(s.check){ s.check(); } if(!s.done) all=false; });
+      note.textContent = all? 'Задание решено полностью. Молодец!' : '';
+    }
+    function runHelp(){ states.forEach(function(s){ if(s.explain) s.explain(); }); note.textContent='Читай подсказку и попробуй снова — ответ она не скажет.'; }
     bCheck.addEventListener('click',function(){
-      var any=false, all=true;
-      states.forEach(function(s){ if(s.check){ var r=s.check(); if(r!==false||s.done) any=any||true; if(!s.done) all=false; } else if(!s.done){ all=false; } });
-      var empties=states.filter(function(s){ return s.check&&!s.done; }).length;
-      note.textContent = all? 'Задание решено полностью. Молодец!' : (empties? 'Проверил то, что заполнено.' : '');
+      Uroki.guard(runCheck,'Код для проверки', task.home? 'Домашнее задание. Проверку открывает взрослый.' : 'Проверку открывает взрослый. Позови маму или папу — они введут код.');
     });
-    bHelp.addEventListener('click',function(){ states.forEach(function(s){ if(s.explain) s.explain(); }); note.textContent='Читай подсказки и попробуй снова.'; });
+    bHelp.addEventListener('click',function(){
+      if(task.home) Uroki.guard(runHelp,'Код для подсказки','Это домашнее задание — подсказку открывает взрослый.');
+      else runHelp();
+    });
     btns.appendChild(bCheck); btns.appendChild(bHelp);
     card.appendChild(btns); card.appendChild(note);
+    var lh=document.createElement('p'); lh.className='lockhint';
+    lh.textContent = task.home? 'Домашнее задание: и проверку, и подсказки открывает взрослый по коду.' : 'Проверку открывает взрослый по коду. Подсказки бери сама — ответ они не говорят.';
+    card.appendChild(lh);
     tasksEl.appendChild(card);
   });
   bump();

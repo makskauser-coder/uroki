@@ -139,8 +139,8 @@ button.part.now{border-color:var(--accent);background:var(--accent-soft);color:v
 button.part.heard .n::after{content:" \2713"}
 .player{background:var(--accent-soft);border-radius:14px;padding:12px 15px;font-family:var(--font-head);font-weight:600;color:var(--accent);font-size:15.5px}
 </style>
-<link rel="stylesheet" href="assets/uroki.css?v=3">
-<script src="assets/uroki.js?v=3"></script>
+<link rel="stylesheet" href="assets/uroki.css?v=4">
+<script src="assets/uroki.js?v=4"></script>
 </head>
 <body>
 <div class="homebar"><a href="./">← Все уроки</a></div>
@@ -278,11 +278,17 @@ button.part.heard .n::after{content:" \2713"}
   }
   function addBtns(ex,onCheck){
     var btns=document.createElement('div'); btns.className='btns';
-    var b1=document.createElement('button'); b1.className='b'; b1.type='button'; b1.textContent='Праверыць';
-    var b2=document.createElement('button'); b2.className='b ghost'; b2.type='button'; b2.textContent='Не ведаю — растлумач';
-    b1.addEventListener('click',function(){ ex.items.forEach(function(s){ if(s.check) s.check(); }); finish(ex); });
+    var b1=document.createElement('button'); b1.className='b'; b1.type='button'; b1.textContent='\uD83D\uDD12 Праверыць';
+    var b2=document.createElement('button'); b2.className='b ghost'; b2.type='button'; b2.textContent='Падумаць разам';
+    b1.addEventListener('click',function(){
+      Uroki.guard(function(){ ex.items.forEach(function(s){ if(s.check) s.check(); }); finish(ex); },
+        'Код для праверкі','Праверку адкрывае дарослы. Паклічы маму ці тату — яны ўвядуць код.');
+    });
     b2.addEventListener('click',function(){ ex.items.forEach(function(s){ if(s.explain) s.explain(); }); });
     btns.appendChild(b1); btns.appendChild(b2); ex.card.appendChild(btns);
+    var lh=document.createElement('p'); lh.className='lockhint';
+    lh.textContent='Праверку адкрывае дарослы па кодзе. Падказкі бяры сама.';
+    ex.card.appendChild(lh);
   }
   function done(st){ if(!st.done){ st.done=true; solved++; bump(); if(st.trk) st.trk.ok(st.right||''); } }
   /* Заданне было зроблена раней: ставім гатовы выгляд, спробу не дадаём. */
@@ -405,8 +411,10 @@ button.part.heard .n::after{content:" \2713"}
     data.opts.forEach(function(o,oi){
       var b=document.createElement('button'); b.type='button'; b.className='opt'; b.textContent=o; obtns.push(b);
       b.addEventListener('click',function(){
-        if(oi===data.a){ b.classList.add('ok'); b.classList.remove('bad'); done(st); say(f,'Правільна! '+data.why,'ok'); finish(ex); }
-        else{ b.classList.add('bad'); st.trk.wrong(o); say(f,data.no&&data.no[oi]? data.no[oi] : 'Не, паспрабуй яшчэ. '+(data.hint||''),'bad'); GATE(obtns, wrap); }
+        if(st.done) return;
+        st.picked=oi;
+        obtns.forEach(function(x){ x.classList.remove('sel','bad'); });
+        b.classList.add('sel'); f.hidden=true;
       });
       opts.appendChild(b);
     });
@@ -414,6 +422,21 @@ button.part.heard .n::after{content:" \2713"}
     st.trk=UR(ex, wrap, plainTxt(data.q));
     st.right=data.opts[data.a];
     if(st.trk.restored){ if(obtns[data.a]) obtns[data.a].classList.add('ok'); obtns.forEach(function(b){ b.disabled=true; }); revive(st,f,data.why||''); } else remind(st,f);
+    st.picked=-1;
+    st.check=function(){
+      if(st.done) return true;
+      if(st.picked<0){ say(f,'Спачатку выберы варыянт, потым націсні «Праверыць».','tip'); return false; }
+      if(st.picked===data.a){
+        obtns[st.picked].classList.remove('sel'); obtns[st.picked].classList.add('ok');
+        obtns.forEach(function(x){ x.disabled=true; });
+        done(st); say(f,'Правільна! '+data.why,'ok'); finish(ex); return true;
+      }
+      obtns[st.picked].classList.remove('sel'); obtns[st.picked].classList.add('bad');
+      st.trk.wrong(data.opts[st.picked]);
+      say(f, data.no&&data.no[st.picked]? data.no[st.picked] : 'Не, паспрабуй яшчэ. '+(data.hint||''),'bad');
+      GATE(obtns, wrap);
+      return false;
+    };
     st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,data.why,'tip'); };
     ex.items.push(st); return st;
   }

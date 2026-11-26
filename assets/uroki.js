@@ -10,6 +10,18 @@
 
 var KEY='uroki.progress.v1';
 
+/* Родительский код. В странице лежит не сам код, а его отпечаток,
+   чтобы ребёнок не нашёл его, заглянув в исходник.
+   Сейчас это 3322. Чтобы поставить свой: открыть на сайте консоль браузера,
+   выполнить Uroki.hash('новый код') и вписать полученное сюда. */
+var CODE='yjcvov';
+function hash(str){
+  var h=5381; str=String(str);
+  for(var i=0;i<str.length;i++){ h=((h<<5)+h+str.charCodeAt(i))>>>0; }
+  return h.toString(36);
+}
+var revealed=false;
+
 var TXT={
   ru:{
     title:'Итог урока',
@@ -23,6 +35,10 @@ var TXT={
     mixed:'Урок пройден полностью. Задания из списка выше стоит прорешать ещё раз — именно в них была ошибка с первой попытки.',
     inProgress:'Урок ещё не закончен — впереди ещё задания.',
     again:'Пройти урок заново', read:'Понятно — пробую ещё раз',
+    askTitle:'Код для проверки', askNote:'Проверку открывает взрослый. Позови маму или папу — они введут код.',
+    askGo:'Проверить', askNo:'Отмена', askBad:'Код не подходит. Попробуйте ещё раз.',
+    askHint:'Код для подсказки', askHintNote:'Это домашнее задание — подсказку открывает взрослый.',
+    reveal:'Показать правильные ответы', hiddenAns:'правильный ответ откроется по коду',
     kept:'Это ты уже решила раньше — ответ сохранён.',
     prevErr:'В прошлый раз здесь была ошибка. Попробуй ещё раз.', prevAns:'Прошлый ответ: ',
     tagFirst:'с первой попытки', tagLate:'со $-й попытки', tagHint:'с подсказкой'
@@ -39,6 +55,10 @@ var TXT={
     mixed:'Урок пройдзены цалкам. Заданні са спіса вышэй варта прарашаць яшчэ раз — менавіта ў іх была памылка з першага разу.',
     inProgress:'Урок яшчэ не скончаны — наперадзе яшчэ заданні.',
     again:'Прайсці ўрок зноў', read:'Зразумела — спрабую яшчэ раз',
+    askTitle:'Код для праверкі', askNote:'Праверку адкрывае дарослы. Паклічы маму ці тату — яны ўвядуць код.',
+    askGo:'Праверыць', askNo:'Адмена', askBad:'Код не падыходзіць. Паспрабуйце яшчэ раз.',
+    askHint:'Код для падказкі', askHintNote:'Гэта дамашняе заданне — падказку адкрывае дарослы.',
+    reveal:'Паказаць правільныя адказы', hiddenAns:'правільны адказ адкрыецца па кодзе',
     kept:'Гэта ты ўжо зрабіла раней — адказ захаваны.',
     prevErr:'Мінулы раз тут была памылка. Паспрабуй яшчэ раз.', prevAns:'Мінулы адказ: ',
     tagFirst:'з першага разу', tagLate:'з $-й спробы', tagHint:'з падказкай'
@@ -113,7 +133,10 @@ function render(){
       li.appendChild(document.createElement('br'));
       var was=el('span','u-was', r.wrong? L.first+r.wrong : L.hinted);
       li.appendChild(was);
-      if(r.right){ li.appendChild(document.createTextNode(' · '+L.right+r.right)); }
+      if(r.right){
+        if(revealed){ li.appendChild(document.createTextNode(' · '+L.right+r.right)); }
+        else{ li.appendChild(E_span(' · '+L.hiddenAns)); }
+      }
       ul.appendChild(li);
     });
     box.appendChild(ul);
@@ -126,6 +149,13 @@ function render(){
   if(!s.errors.length && s.done<s.total) msg=L.noErr+' '+L.inProgress;
   box.appendChild(el('p','u-done', msg));
 
+  if(s.errors.length && !revealed){
+    var rb=el('button','u-again', L.reveal); rb.type='button';
+    rb.style.marginRight='8px';
+    rb.addEventListener('click', function(){ ask(L.askTitle, L.askNote, function(){ revealed=true; render(); }); });
+    box.appendChild(rb);
+  }
+
   var again=el('button','u-again', L.again);
   again.type='button';
   again.addEventListener('click', function(){
@@ -133,6 +163,43 @@ function render(){
     location.reload();
   });
   box.appendChild(again);
+}
+
+function E_span(txt){ var e=el('span','u-hidden-ans'); e.textContent=txt; return e; }
+
+/* Окно ввода родительского кода. Без кода проверка не запускается. */
+function ask(title, note, cb){
+  if(!CODE){ cb(); return; }
+  var ov=el('div','u-ask');
+  var box2=el('div','u-ask-box');
+  box2.appendChild(el('h4',null,title||L.askTitle));
+  box2.appendChild(el('p',null,note||L.askNote));
+  var inp=document.createElement('input');
+  inp.type='text'; inp.inputMode='numeric'; inp.autocomplete='off'; inp.maxLength=12;
+  inp.setAttribute('aria-label', title||L.askTitle);
+  box2.appendChild(inp);
+  var err=el('p','u-ask-err','');
+  box2.appendChild(err);
+  var row=el('div','u-ask-btns');
+  var go=el('button','u-ask-go', L.askGo); go.type='button';
+  var no=el('button','u-ask-no', L.askNo); no.type='button';
+  row.appendChild(go); row.appendChild(no);
+  box2.appendChild(row);
+  ov.appendChild(box2);
+  document.body.appendChild(ov);
+  function close(){ if(ov.parentNode) ov.parentNode.removeChild(ov); document.removeEventListener('keydown', esc); }
+  function esc(e){ if(e.key==='Escape') close(); }
+  document.addEventListener('keydown', esc);
+  function submit(){
+    if(hash(inp.value.trim())===CODE){ close(); cb(); }
+    else { inp.classList.add('bad'); err.textContent=L.askBad; inp.value=''; inp.focus(); }
+  }
+  go.addEventListener('click', submit);
+  no.addEventListener('click', close);
+  inp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); submit(); } });
+  inp.addEventListener('input', function(){ inp.classList.remove('bad'); err.textContent=''; });
+  ov.addEventListener('click', function(e){ if(e.target===ov) close(); });
+  setTimeout(function(){ try{ inp.focus(); }catch(e){} }, 30);
 }
 
 var Uroki={
@@ -224,6 +291,13 @@ var Uroki={
     host.appendChild(box);
     render(); persist();
   },
+
+  /* спросить код и только потом выполнить действие */
+  guard:function(cb, title, note){ ask(title, note, cb); },
+  ask:ask,
+  hash:hash,
+  /* true, если взрослый уже открыл правильные ответы на этой странице */
+  revealed:function(){ return revealed; },
 
   progress:read,
   clearAll:function(){ write({}); }

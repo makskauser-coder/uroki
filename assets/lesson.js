@@ -5,7 +5,16 @@
 'use strict';
 
 var T={
-  ru:{check:'Проверить', help:'Не знаю — объясни', solved:'Решено заданий', of:' из ',
+  ru:{check:'🔒 Проверить', help:'Подумать вместе', solved:'Решено заданий', of:' из ',
+      lockNote:'Проверку открывает взрослый по коду. Подсказки бери сама — они не говорят ответ.',
+      lockNoteHome:'Домашнее задание: и проверку, и подсказки открывает взрослый по коду.',
+      pickFirst:'Сначала выбери вариант, потом нажми «Проверить».',
+      waysHead:'Вот три рассуждения. Какое из них верное?',
+      wayOk:'Да, это верный ход мысли. ', wayNo:'Нет, так не получится. ',
+      checkTitle:'Код для проверки', checkNote:'Проверку открывает взрослый. Позови маму или папу — они введут код.',
+      checkNoteHome:'Домашнее задание. Проверку открывает взрослый.',
+      helpTitle:'Код для подсказки', helpNote:'Это домашнее задание — подсказку открывает взрослый.',
+      thinkAgain:'Перечитай задание и попробуй рассуждать вслух: что известно и что надо найти?',
       empty:'Сначала впиши ответ.', emptyAll:'Заполни все окошки.', allWords:'Используй все слова.',
       touchMark:'Это задание ещё не начато: сначала отметь слова в предложении.',
       touchPick:'Это задание ещё не начато: сначала выбери нужные слова.',
@@ -17,7 +26,16 @@ var T={
       kept:'Это ты уже сделала раньше — ответ сохранён.',
       prevErr:'В прошлый раз здесь была ошибка. Попробуй ещё раз.', prevAns:'Прошлый ответ: ',
       answer:'Ответ: '},
-  be:{check:'Праверыць', help:'Не ведаю — растлумач', solved:'Выканана', of:' з ',
+  be:{check:'🔒 Праверыць', help:'Падумаць разам', solved:'Выканана', of:' з ',
+      lockNote:'Праверку адкрывае дарослы па кодзе. Падказкі бяры сама — яны не кажуць адказ.',
+      lockNoteHome:'Дамашняе заданне: і праверку, і падказкі адкрывае дарослы па кодзе.',
+      pickFirst:'Спачатку выберы варыянт, потым націсні «Праверыць».',
+      waysHead:'Вось тры разважанні. Якое з іх правільнае?',
+      wayOk:'Так, гэта правільны ход думкі. ', wayNo:'Не, так не атрымаецца. ',
+      checkTitle:'Код для праверкі', checkNote:'Праверку адкрывае дарослы. Паклічы маму ці тату — яны ўвядуць код.',
+      checkNoteHome:'Дамашняе заданне. Праверку адкрывае дарослы.',
+      helpTitle:'Код для падказкі', helpNote:'Гэта дамашняе заданне — падказку адкрывае дарослы.',
+      thinkAgain:'Перачытай заданне і паспрабуй разважаць уголас: што вядома і што трэба знайсці?',
       empty:'Спачатку ўпішы адказ.', emptyAll:'Запоўні ўсе ваконцы.', allWords:'Выкарыстай усе словы.',
       touchMark:'Гэта заданне яшчэ не пачата: спачатку размець словы ў сказе.',
       touchPick:'Гэта заданне яшчэ не пачата: спачатку выберы патрэбныя словы.',
@@ -49,7 +67,7 @@ function say(f,html,kind){ f.innerHTML=html; f.className='fb '+kind; f.hidden=fa
 /* ---- общая оболочка одного задания внутри упражнения ---- */
 function mkItem(ex, label){
   var wrap=E('div','item');
-  var st={done:false, wrap:wrap};
+  var st={done:false, wrap:wrap, home:!!ex.home};
   total++;
   st.trk=window.Uroki ? window.Uroki.item(label, ex.title, wrap) : {wrong:function(){},ok:function(){},hint:function(){}};
   ex.items.push(st);
@@ -69,6 +87,42 @@ function revive(st, f, msg){
   st.trk.badge();
   if(f) say(f, L.kept+' '+(msg||''), 'ok');
 }
+/* Подсказки идут ступенями и ни на одной не называют ответ:
+   1) вопрос-направление, 2) разбор другого примера, 3) выбор верного рассуждения. */
+function rungs(d){
+  var r=[], h=d.help;
+  if(h){
+    if(h.ask) r.push({t:'ask', v:h.ask});
+    if(h.sample) r.push({t:'sample', v:h.sample});
+    if(h.ways && h.ways.length) r.push({t:'ways'});
+  } else {
+    (d.steps||[]).forEach(function(x){ r.push({t:'ask', v:x}); });
+  }
+  return r;
+}
+function waysBox(st, d){
+  if(st.wrap.querySelector('.ways')) return;
+  var box=E('div','ways');
+  box.appendChild(E('p','wh', L.waysHead));
+  d.help.ways.forEach(function(w){
+    var b=E('button','wayb'); b.type='button'; b.innerHTML=w.s;
+    var why=E('div','way-why'); why.hidden=true; why.innerHTML=(w.ok? L.wayOk : L.wayNo)+(w.why||'');
+    b.addEventListener('click', function(){ b.className='wayb '+(w.ok?'ok':'bad'); why.hidden=false; });
+    box.appendChild(b); box.appendChild(why);
+  });
+  st.wrap.appendChild(box);
+}
+function helpStep(st, f, d, pre){
+  pre=pre||'';
+  if(!st._rungs) st._rungs=rungs(d);
+  var r=st._rungs, i=st.hi||0;
+  if(!r.length){ say(f, pre+L.thinkAgain, pre? 'bad':'tip'); return; }
+  var cur=r[Math.min(i, r.length-1)];
+  st.hi=i+1;
+  if(cur.t==='ways'){ say(f, pre+L.waysHead, pre? 'bad':'tip'); waysBox(st, d); return; }
+  say(f, pre+(cur.t==='sample'? '\uD83D\uDCD8 ' : '\uD83D\uDCA1 ')+cur.v, pre? 'bad':'tip');
+}
+
 /* Задание было начато и завалено: напоминаем, но не решаем за ребёнка. */
 function remind(st, f){
   if(!st.trk.hadError || !f) return;
@@ -95,7 +149,8 @@ start:function(o){
 },
 
 /* карточка упражнения */
-ex:function(id,title,sub,audio){
+ex:function(id,title,sub,audio,opts){
+  opts=opts||{};
   var c=E('section','card');
   c.appendChild(E('h3',null,title));
   if(sub){ var p=E('p'); p.innerHTML=sub; c.appendChild(p); }
@@ -104,7 +159,7 @@ ex:function(id,title,sub,audio){
     b.setAttribute('data-say',audio); c.appendChild(b);
   }
   exHost.appendChild(c);
-  var ex={id:id,title:title,card:c,items:[]};
+  var ex={id:id,title:title,card:c,items:[],home:!!opts.home};
   exList.push(ex);
   return ex;
 },
@@ -115,9 +170,19 @@ btns:function(ex){
   var box=E('div','btns');
   var b1=E('button','b',L.check); b1.type='button';
   var b2=E('button','b ghost',L.help); b2.type='button';
-  b1.addEventListener('click',function(){ ex.items.forEach(function(s){ if(s.check) s.check(); }); finish(ex); });
-  b2.addEventListener('click',function(){ ex.items.forEach(function(s){ if(s.explain) s.explain(); }); });
+  function runCheck(){ ex.items.forEach(function(s){ if(s.check) s.check(); }); finish(ex); }
+  function runHelp(){ ex.items.forEach(function(s){ if(s.explain) s.explain(); }); }
+  b1.addEventListener('click',function(){
+    if(window.Uroki) window.Uroki.guard(runCheck, L.checkTitle, ex.home? L.checkNoteHome : L.checkNote);
+    else runCheck();
+  });
+  b2.addEventListener('click',function(){
+    if(ex.home && window.Uroki) window.Uroki.guard(runHelp, L.helpTitle, L.helpNote);
+    else runHelp();
+  });
   box.appendChild(b1); box.appendChild(b2); ex.card.appendChild(box);
+  var note=E('p','lockhint', ex.home? L.lockNoteHome : L.lockNote);
+  ex.card.appendChild(note);
 },
 
 /* ---------- числовой ответ ---------- */
@@ -130,8 +195,6 @@ num:function(ex,d){
   if(d.unit) row.appendChild(E('span','unit',d.unit));
   st.wrap.appendChild(row);
   var f=fbEl(st.wrap);
-  var hi=0;
-  function hint(){ var s=(d.steps||[])[Math.min(hi,(d.steps||[]).length-1)]; hi++; return s||(L.answer+d.a); }
   st.check=function(){
     if(st.done) return true;
     var raw=inp.value.trim().replace(',','.');
@@ -140,13 +203,20 @@ num:function(ex,d){
     if(v===d.a){ inp.classList.add('ok'); inp.classList.remove('bad'); win(ex,st,f,d.why||'',d.a); return true; }
     inp.classList.add('bad');
     st.trk.wrong(raw);
-    var m=(d.near&&d.near[v]!==undefined)? d.near[v] : L.notYet+hint();
-    say(f,m,'bad');
+    if(st.home){ say(f,L.notYet,'bad'); }
+    else if(d.near&&d.near[v]!==undefined){ say(f,d.near[v],'bad'); }
+    else { helpStep(st,f,d,L.notYet); }
     window.Uroki && window.Uroki.gate([inp], st.wrap);
     return false;
   };
-  st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,hint(),'tip'); };
-  inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); st.check(); } });
+  st.explain=function(){ if(st.done) return; st.trk.hint(); helpStep(st,f,d); };
+  inp.addEventListener('keydown',function(e){
+    if(e.key!=='Enter') return;
+    e.preventDefault();
+    var all=[].slice.call(ex.card.querySelectorAll('input.ansbox')).filter(function(x){ return !x.readOnly; });
+    var k=all.indexOf(inp);
+    if(k>=0 && all[k+1]) all[k+1].focus(); else inp.blur();
+  });
   inp.addEventListener('input',function(){ inp.classList.remove('bad'); });
   if(st.trk.restored){ inp.value=String(d.a); inp.classList.add('ok'); inp.readOnly=true; revive(st,f,d.why||''); }
   else remind(st,f);
@@ -163,8 +233,6 @@ text:function(ex,d){
   st.wrap.appendChild(row);
   var f=fbEl(st.wrap);
   var variants=(d.a instanceof Array? d.a : [d.a]).map(norm);
-  var hi=0;
-  function hint(){ var s=(d.steps||[])[Math.min(hi,(d.steps||[]).length-1)]; hi++; return s||(L.answer+(d.a instanceof Array? d.a[0] : d.a)); }
   st.check=function(){
     if(st.done) return true;
     var raw=inp.value.trim();
@@ -172,12 +240,18 @@ text:function(ex,d){
     if(variants.indexOf(norm(raw))>=0){ inp.classList.add('ok'); inp.classList.remove('bad'); win(ex,st,f,d.why||'',(d.a instanceof Array? d.a[0]:d.a)); return true; }
     inp.classList.add('bad');
     st.trk.wrong(raw);
-    say(f,L.notYet+hint(),'bad');
+    if(st.home) say(f,L.notYet,'bad'); else helpStep(st,f,d,L.notYet);
     window.Uroki && window.Uroki.gate([inp], st.wrap);
     return false;
   };
-  st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,hint(),'tip'); };
-  inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); st.check(); } });
+  st.explain=function(){ if(st.done) return; st.trk.hint(); helpStep(st,f,d); };
+  inp.addEventListener('keydown',function(e){
+    if(e.key!=='Enter') return;
+    e.preventDefault();
+    var all=[].slice.call(ex.card.querySelectorAll('input.ansbox')).filter(function(x){ return !x.readOnly; });
+    var k=all.indexOf(inp);
+    if(k>=0 && all[k+1]) all[k+1].focus(); else inp.blur();
+  });
   inp.addEventListener('input',function(){ inp.classList.remove('bad'); });
   if(st.trk.restored){ inp.value=(d.a instanceof Array? d.a[0] : String(d.a)); inp.classList.add('ok'); inp.readOnly=true; revive(st,f,d.why||''); }
   else remind(st,f);
@@ -190,24 +264,36 @@ choice:function(ex,d){
   var qp=E('p'); qp.innerHTML=d.q; qp.style.margin='0 0 2px'; st.wrap.appendChild(qp);
   var opts=E('div','opts');
   var btns=[];
-  var f;
+  var f, picked=-1;
   d.opts.forEach(function(o,oi){
     var b=E('button','opt',o); b.type='button'; btns.push(b);
     b.addEventListener('click',function(){
       if(st.done) return;
-      if(oi===d.a){ b.classList.add('ok'); b.classList.remove('bad'); win(ex,st,f,d.why||'',d.opts[d.a]); btns.forEach(function(x){x.disabled=true;}); }
-      else{
-        b.classList.add('bad');
-        st.trk.wrong(o);
-        say(f,(d.no&&d.no[oi])? d.no[oi] : L.notThat+(d.hint||''),'bad');
-        window.Uroki && window.Uroki.gate(btns, st.wrap);
-      }
+      picked=oi;
+      btns.forEach(function(x){ x.classList.remove('sel','bad'); });
+      b.classList.add('sel');
+      if(f){ f.hidden=true; }
     });
     opts.appendChild(b);
   });
   st.wrap.appendChild(opts);
   f=fbEl(st.wrap);
-  st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,d.why||'','tip'); };
+  st.check=function(){
+    if(st.done) return true;
+    if(picked<0){ say(f,L.pickFirst,'tip'); return false; }
+    if(picked===d.a){
+      btns[picked].classList.remove('sel'); btns[picked].classList.add('ok');
+      btns.forEach(function(x){ x.disabled=true; });
+      win(ex,st,f,d.why||'',d.opts[d.a]);
+      return true;
+    }
+    btns[picked].classList.remove('sel'); btns[picked].classList.add('bad');
+    st.trk.wrong(d.opts[picked]);
+    say(f, st.home? L.notThat : ((d.no&&d.no[picked])? d.no[picked] : L.notThat+(d.hint||'')),'bad');
+    window.Uroki && window.Uroki.gate(btns, st.wrap);
+    return false;
+  };
+  st.explain=function(){ if(st.done) return; st.trk.hint(); helpStep(st,f,d); };
   if(st.trk.restored){ btns[d.a].classList.add('ok'); btns.forEach(function(x){ x.disabled=true; }); revive(st,f,d.why||''); }
   else remind(st,f);
   return st;
