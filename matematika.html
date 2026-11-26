@@ -151,8 +151,8 @@ button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:va
 .cnum{font-family:var(--font-head);font-weight:700;font-size:17px;border-radius:10px;padding:8px 12px;background:var(--surface-2);color:var(--muted);border:2px solid var(--line);font-variant-numeric:tabular-nums}
 .cnum.yes{background:var(--units-soft);color:var(--units);border-color:var(--units)}
 </style>
-<link rel="stylesheet" href="assets/uroki.css?v=6">
-<script src="assets/uroki.js?v=6"></script>
+<link rel="stylesheet" href="assets/uroki.css?v=7">
+<script src="assets/uroki.js?v=7"></script>
 </head>
 <body>
 <div class="homebar"><a href="./">← Все уроки</a></div>
@@ -515,25 +515,25 @@ button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:va
   function wzStep2(){
     wzStep('Шаг 2. Сколько осталось? '+cur.n+' − '+cur.T+' = ?', cur.R,
       ['Это вычитание: от '+cur.n+' отними '+cur.T+'.',
-       'Посчитай по частям: от '+cur.n+' убери '+cur.T+' — останется '+cur.R+'.'],
+       'Убирай по частям: сначала десятки, потом единицы. Единицы в круглом числе — нули, значит они не меняются.'],
       wzStep3);
   }
   function wzStep3(){
     wzStep('Шаг 3. Делим первое слагаемое: '+cur.T+' : '+cur.d+' = ?', cur.q1,
-      ['В числе '+cur.T+' ровно '+(cur.T/10)+' десятков. Раздели десятки: '+(cur.T/10)+' : '+cur.d+' = '+(cur.T/10/cur.d)+'. Значит ответ — столько же десятков.',
-       'Ответ: '+cur.q1+'. Проверь: '+cur.q1+' · '+cur.d+' = '+cur.T+'.'],
+      ['В числе '+cur.T+' ровно '+(cur.T/10)+' десятков. Раздели сначала сами десятки: '+(cur.T/10)+' : '+cur.d+'. Сколько получилось — столько десятков и будет в ответе.',
+       'Проверяй себя умножением: то, что ты вписала, умножь на '+cur.d+'. Должно получиться '+cur.T+'.'],
       wzStep4);
   }
   function wzStep4(){
     wzStep('Шаг 4. Делим второе слагаемое: '+cur.R+' : '+cur.d+' = ?', cur.q2,
       ['Проверь умножением: твой ответ, умноженный на '+cur.d+', должен дать '+cur.R+'.',
-       'Вспомни таблицу: '+cur.d+' · '+cur.q2+' = '+cur.R+'. Значит '+cur.R+' : '+cur.d+' = '+cur.q2+'.'],
+       'Иди по таблице умножения на '+cur.d+' и ищи, какое число даёт '+cur.R+'.'],
       wzStep5);
   }
   function wzStep5(){
     wzStep('Шаг 5. Складываем: '+cur.q1+' + '+cur.q2+' = ?', cur.ans,
-      ['Просто сложи два числа: '+cur.q1+' и '+cur.q2+'.',
-       'Ответ: '+cur.ans+'.'],
+      ['Просто сложи два числа, которые ты получила на двух прошлых шагах.',
+       'Складывай в столбик или устно: сначала десятки, потом единицы.'],
       wzDone);
   }
   function wzDone(){
