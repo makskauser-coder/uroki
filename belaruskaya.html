@@ -292,12 +292,14 @@ button.part.heard .n::after{content:" \2713"}
     var hint=document.createElement('p'); hint.className='q';
     hint.textContent='Націскай на слова: 1 раз — дзейнік, 2 разы — выказнік, 3 разы — даданы член, 4 — зняць.';
     var line=document.createElement('div'); line.className='sent';
-    var st={done:false, btns:[]};
+    var st={done:false, btns:[]}; var touched=false;
     data.words.forEach(function(wd,i){
       var b=document.createElement('button'); b.type='button'; b.className='w'; b.textContent=wd.w;
       b.setAttribute('aria-label',wd.w);
       var cur=-1;
       b.addEventListener('click',function(){
+        if(st.done) return;
+        touched=true;
         cur=(cur+2)%4-1;
         b.className='w'+(cur>=0?' r'+cur:'');
       });
@@ -309,6 +311,8 @@ button.part.heard .n::after{content:" \2713"}
     st.trk=UR(ex, wrap, data.words.map(function(w){return w.w;}).join(' '));
     st.right=data.words.filter(function(w){return w.r===0;}).map(function(w){return w.w;}).join(' ')+' — дзейнік, '+data.words.filter(function(w){return w.r===1;}).map(function(w){return w.w;}).join(' ')+' — выказнік';
     st.check=function(){
+      if(st.done) return true;
+      if(!touched){ say(f,'Гэта заданне яшчэ не пачата: спачатку размець словы ў сказе.','tip'); return false; }
       var bad=[];
       st.btns.forEach(function(b,i){
         b.classList.remove('err');

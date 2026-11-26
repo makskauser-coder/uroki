@@ -7,6 +7,8 @@
 var T={
   ru:{check:'Проверить', help:'Не знаю — объясни', solved:'Решено заданий', of:' из ',
       empty:'Сначала впиши ответ.', emptyAll:'Заполни все окошки.', allWords:'Используй все слова.',
+      touchMark:'Это задание ещё не начато: сначала отметь слова в предложении.',
+      touchPick:'Это задание ещё не начато: сначала выбери нужные слова.',
       okWord:'Верно! ', notYet:'Пока не сходится. ', notThat:'Не то. ',
       lock:'🔒 Выполни это задание — и тут появится, что переписать в тетрадь.',
       listen:'🔊 Слушать задание', stop:'⏹ Остановить',
@@ -15,6 +17,8 @@ var T={
       answer:'Ответ: '},
   be:{check:'Праверыць', help:'Не ведаю — растлумач', solved:'Выканана', of:' з ',
       empty:'Спачатку ўпішы адказ.', emptyAll:'Запоўні ўсе ваконцы.', allWords:'Выкарыстай усе словы.',
+      touchMark:'Гэта заданне яшчэ не пачата: спачатку размець словы ў сказе.',
+      touchPick:'Гэта заданне яшчэ не пачата: спачатку выберы патрэбныя словы.',
       okWord:'Правільна! ', notYet:'Пакуль не сыходзіцца. ', notThat:'Не тое. ',
       lock:'🔒 Выканай гэта заданне — і тут з’явіцца, што перапісаць у сшытак.',
       listen:'🔊 Паслухаць заданне', stop:'⏹ Спыніць',
@@ -231,11 +235,11 @@ mark:function(ex,d){
   var st=mkItem(ex, d.words.map(function(w){return w.w;}).join(' '));
   var h=E('p','q', d.hint||('Нажимай на слово: 1 раз — '+roles[0]+', 2 раза — '+roles[1]+', 3 раза — '+roles[2]+', 4 — снять.'));
   st.wrap.appendChild(h);
-  var line=E('div','sent'); var btns=[];
+  var line=E('div','sent'); var btns=[]; var touched=false;
   d.words.forEach(function(wd){
     var b=E('button','w',wd.w); b.type='button'; b.setAttribute('aria-label',wd.w);
     var cur=-1;
-    b.addEventListener('click',function(){ if(st.done) return; cur=(cur+2)%4-1; b.className='w'+(cur>=0?' r'+cur:''); });
+    b.addEventListener('click',function(){ if(st.done) return; touched=true; cur=(cur+2)%4-1; b.className='w'+(cur>=0?' r'+cur:''); });
     b.getRole=function(){ return cur; };
     btns.push(b); line.appendChild(b);
   });
@@ -243,6 +247,7 @@ mark:function(ex,d){
   var f=fbEl(st.wrap);
   st.check=function(){
     if(st.done) return true;
+    if(!touched){ say(f, L.touchMark, 'tip'); return false; }
     var bad=[];
     btns.forEach(function(b,i){ b.classList.remove('err'); if(b.getRole()!==d.words[i].r){ b.classList.add('err'); bad.push(i); } });
     if(!bad.length){
@@ -266,17 +271,18 @@ mark:function(ex,d){
 pickWords:function(ex,d){
   var st=mkItem(ex, plain(d.q));
   var qp=E('p'); qp.innerHTML=d.q; qp.style.margin='0 0 2px'; st.wrap.appendChild(qp);
-  var line=E('div','sent'); var btns=[];
+  var line=E('div','sent'); var btns=[]; var touched=false;
   d.words.forEach(function(wd){
     var b=E('button','w',wd.w); b.type='button';
     b.on=false;
-    b.addEventListener('click',function(){ if(st.done) return; b.on=!b.on; b.className='w'+(b.on?' on':''); });
+    b.addEventListener('click',function(){ if(st.done) return; touched=true; b.on=!b.on; b.className='w'+(b.on?' on':''); });
     btns.push(b); line.appendChild(b);
   });
   st.wrap.appendChild(line);
   var f=fbEl(st.wrap);
   st.check=function(){
     if(st.done) return true;
+    if(!touched){ say(f, L.touchPick, 'tip'); return false; }
     var bad=[];
     btns.forEach(function(b,i){ b.classList.remove('err'); if(!!b.on!==!!d.words[i].on){ b.classList.add('err'); bad.push(i); } });
     if(!bad.length){ win(ex,st,f,d.why||'', d.words.filter(function(w){return w.on;}).map(function(w){return w.w;}).join(', ')); return true; }
