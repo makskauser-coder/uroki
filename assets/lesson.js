@@ -26,7 +26,12 @@ var T={
       part:'Часть ', noPart:'Часть не выбрана.', endLesson:'Урок закончен. Переходи к заданиям!',
       kept:'Это ты уже сделала раньше — ответ сохранён.',
       prevErr:'В прошлый раз здесь была ошибка. Попробуй ещё раз.', prevAns:'Прошлый ответ: ',
-      answer:'Ответ: '},
+      answer:'Ответ: ',
+      defPicks:'Прочитай предложение целиком с каждым вариантом по очереди — вслух. Оставь тот, с которым фраза звучит правильно и подходит по смыслу. Если выбираешь букву, подбери проверочное или родственное слово.',
+      defMark:'Сначала найди главные члены. Спроси: о ком или о чём говорится в предложении? — это подлежащее. Что о нём говорится, что оно делает? — это сказуемое. Потом от главных слов задавай вопросы к остальным: какой? чей? — определение; кого? чем? о чём? — дополнение; где? когда? как? — обстоятельство.',
+      defPick:'Задай вопрос от главного слова и смотри, какие слова на него отвечают. Отмечай только те, что подходят по вопросу, а не те, что просто стоят рядом.',
+      defOrder:'Найди ту часть, с которой рассказ может начаться: в ней о предмете говорят впервые и её можно понять без остальных. Дальше каждый раз бери ту часть, которая продолжает мысль предыдущей — по словам «он», «её», «там», «потом».',
+      defMorph:'Разбирай по порядку. Сначала измени слово (один — много, нет кого, доволен чем) — та часть на конце, которая меняется, и есть окончание. Потом подбери родственные слова: их общая часть — корень. Всё, что стоит перед корнем, — приставка, а то, что между корнем и окончанием, — суффикс.'},
   be:{check:'🔒 Праверыць', help:'Падумаць разам', solved:'Выканана', of:' з ',
       lockNote:'Праверку адкрывае дарослы па кодзе. Падказкі бяры сама — яны не кажуць адказ.',
       lockNoteHome:'Дамашняе заданне: і праверку, і падказкі адкрывае дарослы па кодзе.',
@@ -48,7 +53,12 @@ var T={
       part:'Частка ', noPart:'Частка не выбрана.', endLesson:'Урок скончаны. Пераходзь да заданняў!',
       kept:'Гэта ты ўжо зрабіла раней — адказ захаваны.',
       prevErr:'Мінулы раз тут была памылка. Паспрабуй яшчэ раз.', prevAns:'Мінулы адказ: ',
-      answer:'Адказ: '}
+      answer:'Адказ: ',
+      defPicks:'Прачытай сказ цалкам з кожным варыянтам па чарзе — уголас. Пакінь той, з якім фраза гучыць правільна і падыходзіць па сэнсе.',
+      defMark:'Спачатку знайдзі галоўныя члены. Спытай: пра каго ці пра што гаворыцца ў сказе? — гэта дзейнік. Што пра яго гаворыцца, што ён робіць? — гэта выказнік. Потым ад галоўных слоў задавай пытанні да астатніх: які? чый? — азначэнне; каго? чым? пра што? — дапаўненне; дзе? калі? як? — акалічнасць.',
+      defPick:'Задай пытанне ад галоўнага слова і глядзі, якія словы на яго адказваюць. Адзначай толькі тыя, што падыходзяць па пытанні, а не тыя, што проста стаяць побач.',
+      defOrder:'Знайдзі тую частку, з якой расказ можа пачацца: у ёй пра прадмет гавораць упершыню. Далей кожны раз бяры тую частку, якая працягвае думку папярэдняй — па словах «ён», «яе», «там», «потым».',
+      defMorph:'Разбірай па парадку. Спачатку змяні слова — тое, што мяняецца на канцы, і ёсць канчатак. Потым падбяры роднасныя словы: іх агульная частка — корань. Усё перад коранем — прыстаўка, а паміж коранем і канчаткам — суфікс.'}
 };
 
 var L=T.ru, cfg=null, exHost=null, cleanHost=null, progEl=null;
@@ -91,7 +101,7 @@ function revive(st, f, msg){
 }
 /* Подсказки идут ступенями и ни на одной не называют ответ:
    1) вопрос-направление, 2) разбор другого примера, 3) выбор верного рассуждения. */
-function rungs(d){
+function rungs(d, def){
   var r=[], h=d.help;
   if(h){
     if(h.ask) r.push({t:'ask', v:h.ask});
@@ -100,6 +110,7 @@ function rungs(d){
   } else {
     (d.steps||[]).forEach(function(x){ r.push({t:'ask', v:x}); });
   }
+  if(!r.length && def) r.push({t:'ask', v:def});
   return r;
 }
 function waysBox(st, d){
@@ -114,9 +125,9 @@ function waysBox(st, d){
   });
   st.wrap.appendChild(box);
 }
-function helpStep(st, f, d, pre){
+function helpStep(st, f, d, pre, def){
   pre=pre||'';
-  if(!st._rungs) st._rungs=rungs(d);
+  if(!st._rungs) st._rungs=rungs(d, def);
   var r=st._rungs, i=st.hi||0;
   if(!r.length){ say(f, pre+L.thinkAgain, pre? 'bad':'tip'); return; }
   var cur=r[Math.min(i, r.length-1)];
@@ -345,13 +356,11 @@ picks:function(ex,d){
     if(empty){ say(f,L.emptyAll,'tip'); return false; }
     if(!bad.length){ win(ex,st,f,d.ok||'',d.ok||''); return true; }
     st.trk.wrong(bad.map(function(s){ return s.options[s.selectedIndex].textContent; }).join(', '));
-    var m='';
-    bad.forEach(function(s){ m+='• '+(s.qq? '<b>'+s.qq+'</b> — ':'')+s.why+'<br>'; });
-    say(f,m,'bad');
+    if(st.home) say(f,L.notYet,'bad'); else helpStep(st,f,d,L.notYet,L.defPicks);
     window.Uroki && window.Uroki.gate(sels, st.wrap);
     return false;
   };
-  st.explain=function(){ if(st.done) return; st.trk.hint(); var m=''; sels.forEach(function(s){ m+='• '+(s.qq? '<b>'+s.qq+'</b> — ':'')+s.why+'<br>'; }); say(f,m,'tip'); };
+  st.explain=function(){ if(st.done) return; st.trk.hint(); helpStep(st,f,d,'',L.defPicks); };
   if(st.trk.restored){ sels.forEach(function(x){ x.value=String(x.dataset.a); x.classList.add('ok'); x.disabled=true; }); revive(st,f,d.ok||''); }
   else remind(st,f);
   return st;
@@ -386,13 +395,11 @@ mark:function(ex,d){
       return true;
     }
     st.trk.wrong(bad.map(function(i){return d.words[i].w;}).join(', '));
-    var m='';
-    bad.slice(0,3).forEach(function(i){ m+='• <b>'+d.words[i].w+'</b> — '+d.words[i].why+'<br>'; });
-    say(f,m,'bad');
+    if(st.home) say(f,L.notYet,'bad'); else helpStep(st,f,d,L.notYet,L.defMark);
     window.Uroki && window.Uroki.gate(btns, st.wrap);
     return false;
   };
-  st.explain=function(){ if(st.done) return; st.trk.hint(); var m=''; d.words.forEach(function(w){ m+='• <b>'+w.w+'</b> — '+roles[w.r]+'. '+w.why+'<br>'; }); say(f,m,'tip'); };
+  st.explain=function(){ if(st.done) return; st.trk.hint(); helpStep(st,f,d,'',L.defMark); };
   if(st.trk.restored){ btns.forEach(function(b,i){ b.setRole(d.words[i].r); }); revive(st,f,''); }
   else remind(st,f);
   return st;
@@ -418,13 +425,11 @@ pickWords:function(ex,d){
     btns.forEach(function(b,i){ b.classList.remove('err'); if(!!b.on!==!!d.words[i].on){ b.classList.add('err'); bad.push(i); } });
     if(!bad.length){ win(ex,st,f,d.why||'', d.words.filter(function(w){return w.on;}).map(function(w){return w.w;}).join(', ')); return true; }
     st.trk.wrong(btns.filter(function(b){return b.on;}).map(function(b){return b.textContent;}).join(', ')||'ничего не выбрано');
-    var m='';
-    bad.slice(0,3).forEach(function(i){ m+='• <b>'+d.words[i].w+'</b> — '+d.words[i].why+'<br>'; });
-    say(f,m,'bad');
+    if(st.home) say(f,L.notYet,'bad'); else helpStep(st,f,d,L.notYet,L.defPick);
     window.Uroki && window.Uroki.gate(btns, st.wrap);
     return false;
   };
-  st.explain=function(){ if(st.done) return; st.trk.hint(); var m=''; d.words.forEach(function(w){ m+='• <b>'+w.w+'</b> — '+w.why+'<br>'; }); say(f,m,'tip'); };
+  st.explain=function(){ if(st.done) return; st.trk.hint(); helpStep(st,f,d,'',L.defPick); };
   if(st.trk.restored){ btns.forEach(function(b,i){ b.on=!!d.words[i].on; b.className='w'+(b.on?' on':''); }); revive(st,f,d.why||''); }
   else remind(st,f);
   return st;
@@ -452,11 +457,11 @@ order:function(ex,d){
     var ok=chosen.every(function(v,i){ return v===d.order[i]; });
     if(ok){ win(ex,st,f,d.why||'', d.order.map(function(i){return d.words[i];}).join(' ')); return true; }
     st.trk.wrong(chosen.map(function(i){return d.words[i];}).join(' '));
-    say(f,(d.hint||''),'bad');
+    if(st.home) say(f,L.notYet,'bad'); else helpStep(st,f,d,L.notYet,L.defOrder);
     window.Uroki && window.Uroki.gate(bbtns.concat([clr]), st.wrap);
     return false;
   };
-  st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,d.why||'','tip'); };
+  st.explain=function(){ if(st.done) return; st.trk.hint(); helpStep(st,f,d,'',L.defOrder); };
   if(st.trk.restored){ chosen=d.order.slice(); chosen.forEach(function(i){ bbtns[i].classList.add('used'); }); redraw(); revive(st,f,d.why||''); }
   else remind(st,f);
   return st;
@@ -495,13 +500,11 @@ morph:function(ex,d){
       return true;
     }
     st.trk.wrong(bad.map(function(s){ return (s.pv||'нулевое')+'='+s.options[s.selectedIndex].textContent; }).join(', '));
-    var m='';
-    bad.forEach(function(s){ m+='• <b>'+(s.pv||'нулевое окончание')+'</b> — '+s.why+'<br>'; });
-    say(f,m,'bad');
+    if(st.home) say(f,L.notYet,'bad'); else helpStep(st,f,d,L.notYet,L.defMorph);
     window.Uroki && window.Uroki.gate(sels, st.wrap);
     return false;
   };
-  st.explain=function(){ if(st.done) return; st.trk.hint(); var m=''; d.parts.forEach(function(p){ m+='• <b>'+(p.v||'нулевое окончание')+'</b> — '+roles[p.r]+'. '+(p.why||'')+'<br>'; }); say(f,m,'tip'); };
+  st.explain=function(){ if(st.done) return; st.trk.hint(); helpStep(st,f,d,'',L.defMorph); };
   if(st.trk.restored){ sels.forEach(function(x){ x.value=String(x.dataset.a); x.classList.add('ok'); x.disabled=true; }); revive(st,f,d.why||''); }
   else remind(st,f);
   return st;

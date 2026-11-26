@@ -139,8 +139,8 @@ button.part.now{border-color:var(--accent);background:var(--accent-soft);color:v
 button.part.heard .n::after{content:" \2713"}
 .player{background:var(--accent-soft);border-radius:14px;padding:12px 15px;font-family:var(--font-head);font-weight:600;color:var(--accent);font-size:15.5px}
 </style>
-<link rel="stylesheet" href="assets/uroki.css?v=7">
-<script src="assets/uroki.js?v=7"></script>
+<link rel="stylesheet" href="assets/uroki.css?v=8">
+<script src="assets/uroki.js?v=8"></script>
 </head>
 <body>
 <div class="homebar"><a href="./">← Все уроки</a></div>
@@ -276,6 +276,24 @@ button.part.heard .n::after{content:" \2713"}
     exAll.push(ex);
     return ex;
   }
+  var DEF={
+    mark:'Спачатку знайдзі галоўныя члены. Спытай: пра каго ці пра што гаворыцца ў сказе? — гэта дзейнік. Што пра яго гаворыцца, што ён робіць? — гэта выказнік. Потым ад галоўных слоў задавай пытанні да астатніх слоў: які? чый? колькі? дзе? калі? як? — усе яны даданыя члены.',
+    pick:'Задай пытанне ад галоўнага слова і глядзі, якое слова на яго адказвае. Потым прачытай сказ цалкам з кожным варыянтам — пакінь той, з якім сказ гучыць правільна.',
+    choice:'Прачытай усе варыянты ўголас і адкінь тыя, што відавочна не падыходзяць. З тых, што засталіся, выберы той, які адказвае менавіта на пытанне задання.',
+    order:'Пачынай з таго, пра каго ці пра што гаворыцца, — гэта дзейнік. Потым пастаў слова, якое кажа, што ён робіць. Астатнія словы стаў так, каб кожнае адказвала на пытанне ад таго слова, да якога адносіцца. Звярай з ваконцамі схемы.'
+  };
+  /* Падказка вядзе думку і ніколі не кажа адказ. */
+  function hintStep(st,f,data,def,pre){
+    pre=pre||'';
+    if(!st._r){
+      st._r=[];
+      if(data.ask) st._r.push(data.ask);
+      if(data.hint) st._r.push(data.hint);
+      if(!st._r.length) st._r.push(def);
+    }
+    var i=st._hi||0; st._hi=i+1;
+    say(f, pre+'\uD83D\uDCA1 '+st._r[Math.min(i,st._r.length-1)], pre? 'bad':'tip');
+  }
   function addBtns(ex,onCheck){
     var btns=document.createElement('div'); btns.className='btns';
     var b1=document.createElement('button'); b1.className='b'; b1.type='button'; b1.textContent='\uD83D\uDD12 Праверыць';
@@ -284,7 +302,7 @@ button.part.heard .n::after{content:" \2713"}
       Uroki.guard(function(){ ex.items.forEach(function(s){ if(s.check) s.check(); }); finish(ex); },
         'Код для праверкі','Праверку адкрывае дарослы. Паклічы маму ці тату — яны ўвядуць код.');
     });
-    b2.addEventListener('click',function(){ ex.items.forEach(function(s){ if(s.explain) s.explain(); }); });
+    b2.addEventListener('click',function(){ for(var i=0;i<ex.items.length;i++){ if(!ex.items[i].done && ex.items[i].explain){ ex.items[i].explain(); return; } } });
     btns.appendChild(b1); btns.appendChild(b2); ex.card.appendChild(btns);
     var lh=document.createElement('p'); lh.className='lockhint';
     lh.textContent='Праверку адкрывае дарослы па кодзе. Падказкі бяры сама.';
@@ -342,17 +360,11 @@ button.part.heard .n::after{content:" \2713"}
         say(f,'Правільна! '+data.words.filter(function(w){return w.r===0;}).map(function(w){return w.w;}).join(' ')+' — дзейнік, '+data.words.filter(function(w){return w.r===1;}).map(function(w){return w.w;}).join(' ')+' — выказнік, астатняе — даданыя члены.','ok');
         return true;
       }
-      var msg='Яшчэ не так. Паглядзі на словы, абведзеныя чырвоным:<br>';
-      bad.slice(0,3).forEach(function(i){ msg+='• <b>'+data.words[i].w+'</b> — '+data.words[i].why+'<br>'; });
       st.trk.wrong(bad.map(function(i){return data.words[i].w;}).join(', '));
-      say(f,msg,'bad'); GATE(st.btns, wrap); return false;
+      hintStep(st,f,data,DEF.mark,'Яшчэ не так. Паглядзі на словы, абведзеныя чырвоным. ');
+      GATE(st.btns, wrap); return false;
     };
-    st.explain=function(){
-      if(st.done) return; st.trk.hint();
-      var msg='';
-      data.words.forEach(function(w){ msg+='• <b>'+w.w+'</b> — '+ROLE[w.r]+'. '+w.why+'<br>'; });
-      say(f,msg,'tip');
-    };
+    st.explain=function(){ if(st.done) return; st.trk.hint(); hintStep(st,f,data,DEF.mark); };
     ex.items.push(st); return st;
   }
 
@@ -387,17 +399,11 @@ button.part.heard .n::after{content:" \2713"}
       });
       if(empty){ say(f,'Выберы словы ва ўсіх ваконцах.','tip'); return false; }
       if(!bad.length){ done(st); say(f,'Правільна! '+(data.ok||''),'ok'); return true; }
-      var msg='';
-      bad.forEach(function(s){ msg+='• '+(s.qq? 'Пытанне <b>'+s.qq+'</b> — ':'')+s.why+'<br>'; });
       st.trk.wrong(bad.map(function(x){ return x.options[x.selectedIndex].textContent; }).join(', '));
-      say(f,msg,'bad'); GATE(st.sels, wrap); return false;
+      hintStep(st,f,data,DEF.pick,'Яшчэ не так. ');
+      GATE(st.sels, wrap); return false;
     };
-    st.explain=function(){
-      if(st.done) return; st.trk.hint();
-      var msg='';
-      st.sels.forEach(function(s){ msg+='• '+(s.qq? '<b>'+s.qq+'</b> — ':'')+s.why+'<br>'; });
-      say(f,msg,'tip');
-    };
+    st.explain=function(){ if(st.done) return; st.trk.hint(); hintStep(st,f,data,DEF.pick); };
     ex.items.push(st); return st;
   }
 
@@ -433,11 +439,11 @@ button.part.heard .n::after{content:" \2713"}
       }
       obtns[st.picked].classList.remove('sel'); obtns[st.picked].classList.add('bad');
       st.trk.wrong(data.opts[st.picked]);
-      say(f, data.no&&data.no[st.picked]? data.no[st.picked] : 'Не, паспрабуй яшчэ. '+(data.hint||''),'bad');
+      hintStep(st,f,data,DEF.choice,'Не, паспрабуй яшчэ. ');
       GATE(obtns, wrap);
       return false;
     };
-    st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,data.why,'tip'); };
+    st.explain=function(){ if(st.done) return; st.trk.hint(); hintStep(st,f,data,DEF.choice); };
     ex.items.push(st); return st;
   }
 
@@ -470,11 +476,11 @@ button.part.heard .n::after{content:" \2713"}
       var ok=chosen.every(function(v,i){ return v===data.order[i]; });
       if(ok){ done(st); say(f,'Правільна! '+data.why,'ok'); return true; }
       st.trk.wrong(built.textContent);
-      say(f,'Парадак не падыходзіць пад схему. '+data.hint,'bad');
+      hintStep(st,f,data,DEF.order,'Парадак не падыходзіць пад схему. ');
       GATE([].slice.call(bank.children).concat([clr]), wrap);
       return false;
     };
-    st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,data.why,'tip'); };
+    st.explain=function(){ if(st.done) return; st.trk.hint(); hintStep(st,f,data,DEF.order); };
     ex.items.push(st); return st;
   }
 
