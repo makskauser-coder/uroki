@@ -15,6 +15,7 @@ var T={
       checkNoteHome:'Домашнее задание. Проверку открывает взрослый.',
       helpTitle:'Код для подсказки', helpNote:'Это домашнее задание — подсказку открывает взрослый.',
       thinkAgain:'Перечитай задание и попробуй рассуждать вслух: что известно и что надо найти?',
+      hintOne:'\uD83D\uDCA1 Подсказка',
       empty:'Сначала впиши ответ.', emptyAll:'Заполни все окошки.', allWords:'Используй все слова.',
       touchMark:'Это задание ещё не начато: сначала отметь слова в предложении.',
       touchPick:'Это задание ещё не начато: сначала выбери нужные слова.',
@@ -36,6 +37,7 @@ var T={
       checkNoteHome:'Дамашняе заданне. Праверку адкрывае дарослы.',
       helpTitle:'Код для падказкі', helpNote:'Гэта дамашняе заданне — падказку адкрывае дарослы.',
       thinkAgain:'Перачытай заданне і паспрабуй разважаць уголас: што вядома і што трэба знайсці?',
+      hintOne:'\uD83D\uDCA1 Падказка',
       empty:'Спачатку ўпішы адказ.', emptyAll:'Запоўні ўсе ваконцы.', allWords:'Выкарыстай усе словы.',
       touchMark:'Гэта заданне яшчэ не пачата: спачатку размець словы ў сказе.',
       touchPick:'Гэта заданне яшчэ не пачата: спачатку выберы патрэбныя словы.',
@@ -167,11 +169,27 @@ note:function(ex,html){ var p=E('p','q'); p.innerHTML=html; ex.card.appendChild(
 hr:function(ex){ var h=E('div'); h.style.cssText='border-top:1px solid var(--line);margin:12px 0 2px'; ex.card.appendChild(h); },
 
 btns:function(ex){
+  /* у каждого задания своя кнопка подсказки: нажатие помечает только его,
+     а не все задания карточки сразу */
+  ex.items.forEach(function(st){
+    if(!st.explain || !st.wrap || st.wrap.querySelector('.hintb')) return;
+    var hb=E('button','hintb', L.hintOne); hb.type='button';
+    hb.addEventListener('click', function(){
+      if(st.done) return;
+      if(ex.home && window.Uroki) window.Uroki.guard(function(){ st.explain(); }, L.helpTitle, L.helpNote);
+      else st.explain();
+    });
+    st.wrap.appendChild(hb);
+  });
   var box=E('div','btns');
   var b1=E('button','b',L.check); b1.type='button';
   var b2=E('button','b ghost',L.help); b2.type='button';
   function runCheck(){ ex.items.forEach(function(s){ if(s.check) s.check(); }); finish(ex); }
-  function runHelp(){ ex.items.forEach(function(s){ if(s.explain) s.explain(); }); }
+  function runHelp(){
+    for(var i=0;i<ex.items.length;i++){
+      if(!ex.items[i].done && ex.items[i].explain){ ex.items[i].explain(); return; }
+    }
+  }
   b1.addEventListener('click',function(){
     if(window.Uroki) window.Uroki.guard(runCheck, L.checkTitle, ex.home? L.checkNoteHome : L.checkNote);
     else runCheck();

@@ -52,3 +52,5 @@
 .way-why{font-size:14.5px;line-height:1.45;margin:-4px 0 10px;padding:9px 13px;border-radius:10px;background:var(--surface-2,#eef2fa)}
 .opt.sel{border-color:var(--accent,#3550c8);background:var(--accent-soft,#e3e9fd);color:var(--accent,#3550c8)}
 .lockhint{font-size:13.5px;color:var(--muted,#5e6a86);margin:8px 0 0}
+.hintb{display:inline-block;margin-top:9px;font-family:var(--font-head,system-ui),system-ui,sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;background:none;color:var(--muted,#5e6a86);border:1px dashed var(--line,#dbe3f2);border-radius:999px;padding:6px 12px}
+.hintb:hover{color:var(--ink,#19223a);border-style:solid;border-color:var(--accent,#3550c8)}
