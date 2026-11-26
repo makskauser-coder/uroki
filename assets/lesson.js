@@ -14,6 +14,8 @@ var T={
       listen:'🔊 Слушать задание', stop:'⏹ Остановить',
       playAll:'▶︎ Слушать урок', pause:'⏸ Пауза', prev:'◀ Назад', next:'Дальше ▶',
       part:'Часть ', noPart:'Часть не выбрана.', endLesson:'Урок закончен. Переходи к заданиям!',
+      kept:'Это ты уже сделала раньше — ответ сохранён.',
+      prevErr:'В прошлый раз здесь была ошибка. Попробуй ещё раз.', prevAns:'Прошлый ответ: ',
       answer:'Ответ: '},
   be:{check:'Праверыць', help:'Не ведаю — растлумач', solved:'Выканана', of:' з ',
       empty:'Спачатку ўпішы адказ.', emptyAll:'Запоўні ўсе ваконцы.', allWords:'Выкарыстай усе словы.',
@@ -24,6 +26,8 @@ var T={
       listen:'🔊 Паслухаць заданне', stop:'⏹ Спыніць',
       playAll:'▶︎ Слухаць урок', pause:'⏸ Паўза', prev:'◀ Назад', next:'Далей ▶',
       part:'Частка ', noPart:'Частка не выбрана.', endLesson:'Урок скончаны. Пераходзь да заданняў!',
+      kept:'Гэта ты ўжо зрабіла раней — адказ захаваны.',
+      prevErr:'Мінулы раз тут была памылка. Паспрабуй яшчэ раз.', prevAns:'Мінулы адказ: ',
       answer:'Адказ: '}
 };
 
@@ -52,11 +56,23 @@ function mkItem(ex, label){
   ex.card.appendChild(wrap);
   return st;
 }
-function win(ex, st, f, msg, right){
+function win(ex, st, f, msg, right, text){
   if(!st.done){ st.done=true; solved++; bump(); }
-  st.trk.ok(right);
+  st.trk.ok(right, text);
   say(f, L.okWord+(msg||''), 'ok');
   finish(ex);
+}
+/* Задание было решено в прошлый раз: ставим готовый вид, но попытку не добавляем. */
+function revive(st, f, msg){
+  if(st.done) return;
+  st.done=true; solved++; bump();
+  st.trk.badge();
+  if(f) say(f, L.kept+' '+(msg||''), 'ok');
+}
+/* Задание было начато и завалено: напоминаем, но не решаем за ребёнка. */
+function remind(st, f){
+  if(!st.trk.hadError || !f) return;
+  say(f, L.prevErr+(st.trk.rec.wrong? ' '+L.prevAns+st.trk.rec.wrong : ''), 'tip');
 }
 function finish(ex){
   if(!ex.items.length) return;
@@ -132,6 +148,8 @@ num:function(ex,d){
   st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,hint(),'tip'); };
   inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); st.check(); } });
   inp.addEventListener('input',function(){ inp.classList.remove('bad'); });
+  if(st.trk.restored){ inp.value=String(d.a); inp.classList.add('ok'); inp.readOnly=true; revive(st,f,d.why||''); }
+  else remind(st,f);
   return st;
 },
 
@@ -161,6 +179,8 @@ text:function(ex,d){
   st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,hint(),'tip'); };
   inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); st.check(); } });
   inp.addEventListener('input',function(){ inp.classList.remove('bad'); });
+  if(st.trk.restored){ inp.value=(d.a instanceof Array? d.a[0] : String(d.a)); inp.classList.add('ok'); inp.readOnly=true; revive(st,f,d.why||''); }
+  else remind(st,f);
   return st;
 },
 
@@ -188,6 +208,8 @@ choice:function(ex,d){
   st.wrap.appendChild(opts);
   f=fbEl(st.wrap);
   st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,d.why||'','tip'); };
+  if(st.trk.restored){ btns[d.a].classList.add('ok'); btns.forEach(function(x){ x.disabled=true; }); revive(st,f,d.why||''); }
+  else remind(st,f);
   return st;
 },
 
@@ -226,6 +248,8 @@ picks:function(ex,d){
     return false;
   };
   st.explain=function(){ if(st.done) return; st.trk.hint(); var m=''; sels.forEach(function(s){ m+='• '+(s.qq? '<b>'+s.qq+'</b> — ':'')+s.why+'<br>'; }); say(f,m,'tip'); };
+  if(st.trk.restored){ sels.forEach(function(x){ x.value=String(x.dataset.a); x.classList.add('ok'); x.disabled=true; }); revive(st,f,d.ok||''); }
+  else remind(st,f);
   return st;
 },
 
@@ -241,6 +265,7 @@ mark:function(ex,d){
     var cur=-1;
     b.addEventListener('click',function(){ if(st.done) return; touched=true; cur=(cur+2)%4-1; b.className='w'+(cur>=0?' r'+cur:''); });
     b.getRole=function(){ return cur; };
+    b.setRole=function(r){ cur=r; b.className='w'+(r>=0?' r'+r:''); };
     btns.push(b); line.appendChild(b);
   });
   st.wrap.appendChild(line);
@@ -264,6 +289,8 @@ mark:function(ex,d){
     return false;
   };
   st.explain=function(){ if(st.done) return; st.trk.hint(); var m=''; d.words.forEach(function(w){ m+='• <b>'+w.w+'</b> — '+roles[w.r]+'. '+w.why+'<br>'; }); say(f,m,'tip'); };
+  if(st.trk.restored){ btns.forEach(function(b,i){ b.setRole(d.words[i].r); }); revive(st,f,''); }
+  else remind(st,f);
   return st;
 },
 
@@ -294,6 +321,8 @@ pickWords:function(ex,d){
     return false;
   };
   st.explain=function(){ if(st.done) return; st.trk.hint(); var m=''; d.words.forEach(function(w){ m+='• <b>'+w.w+'</b> — '+w.why+'<br>'; }); say(f,m,'tip'); };
+  if(st.trk.restored){ btns.forEach(function(b,i){ b.on=!!d.words[i].on; b.className='w'+(b.on?' on':''); }); revive(st,f,d.why||''); }
+  else remind(st,f);
   return st;
 },
 
@@ -324,6 +353,8 @@ order:function(ex,d){
     return false;
   };
   st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,d.why||'','tip'); };
+  if(st.trk.restored){ chosen=d.order.slice(); chosen.forEach(function(i){ bbtns[i].classList.add('used'); }); redraw(); revive(st,f,d.why||''); }
+  else remind(st,f);
   return st;
 },
 
@@ -367,6 +398,8 @@ morph:function(ex,d){
     return false;
   };
   st.explain=function(){ if(st.done) return; st.trk.hint(); var m=''; d.parts.forEach(function(p){ m+='• <b>'+(p.v||'нулевое окончание')+'</b> — '+roles[p.r]+'. '+(p.why||'')+'<br>'; }); say(f,m,'tip'); };
+  if(st.trk.restored){ sels.forEach(function(x){ x.value=String(x.dataset.a); x.classList.add('ok'); x.disabled=true; }); revive(st,f,d.why||''); }
+  else remind(st,f);
   return st;
 },
 
@@ -388,7 +421,7 @@ free:function(ex,d){
       if(!hit) missing.push(alts[0]);
     });
     var tooShort=(d.min && n.split(' ').length<d.min);
-    if(!missing.length && !tooShort){ ta.style.borderColor='var(--ok)'; win(ex,st,f,d.why||'', d.sample||''); return true; }
+    if(!missing.length && !tooShort){ ta.style.borderColor='var(--ok)'; win(ex,st,f,d.why||'', d.sample||'', raw); return true; }
     st.trk.wrong(raw.slice(0,60));
     var m2=tooShort? ('Напиши подробнее — хотя бы '+d.min+' слов. ') : '';
     if(missing.length) m2+='Не хватает: <b>'+missing.join('</b>, <b>')+'</b>. '+(d.hint||'');
@@ -396,6 +429,11 @@ free:function(ex,d){
     return false;
   };
   st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,(d.sample? '<b>Образец:</b> '+d.sample : (d.why||'')),'tip'); };
+  /* черновик свободного ответа сохраняем даже без проверки */
+  ta.addEventListener('blur',function(){ if(!st.done) st.trk.keep(ta.value); });
+  if(st.trk.savedText){ ta.value=st.trk.savedText; }
+  if(st.trk.restored){ ta.style.borderColor='var(--ok)'; ta.readOnly=true; revive(st,f,d.why||''); }
+  else remind(st,f);
   return st;
 },
 
@@ -412,6 +450,7 @@ clean:function(id,title,lines){
 
 /* ---------- итог ---------- */
 mount:function(){
+  exList.forEach(finish);
   var host=document.getElementById('uroki-result');
   if(host && window.Uroki) window.Uroki.mount(host);
   bump();

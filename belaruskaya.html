@@ -139,8 +139,8 @@ button.part.now{border-color:var(--accent);background:var(--accent-soft);color:v
 button.part.heard .n::after{content:" \2713"}
 .player{background:var(--accent-soft);border-radius:14px;padding:12px 15px;font-family:var(--font-head);font-weight:600;color:var(--accent);font-size:15.5px}
 </style>
-<link rel="stylesheet" href="assets/uroki.css?v=2">
-<script src="assets/uroki.js?v=2"></script>
+<link rel="stylesheet" href="assets/uroki.css?v=3">
+<script src="assets/uroki.js?v=3"></script>
 </head>
 <body>
 <div class="homebar"><a href="./">← Все уроки</a></div>
@@ -244,7 +244,7 @@ button.part.heard .n::after{content:" \2713"}
 <script>
 (function(){
   var exHost=document.getElementById('ex'), cleanHost=document.getElementById('clean'), progEl=document.getElementById('progress-n');
-  var total=0, solved=0, cleanBlocks={};
+  var total=0, solved=0, cleanBlocks={}, exAll=[];
   Uroki.init({id:'be-dadanyia', title:'Даданыя члены сказа', subject:'Беларуская мова', lang:'be'});
   function UR(ex,host,label){ return Uroki.item(label, ex.title, host); }
   function GATE(els,host){ Uroki.gate(els,host); }
@@ -273,6 +273,7 @@ button.part.heard .n::after{content:" \2713"}
       b.textContent='\uD83D\uDD0A Паслухаць заданне'; b.setAttribute('data-say',audio);
       ex.card.appendChild(b);
     }
+    exAll.push(ex);
     return ex;
   }
   function addBtns(ex,onCheck){
@@ -284,6 +285,16 @@ button.part.heard .n::after{content:" \2713"}
     btns.appendChild(b1); btns.appendChild(b2); ex.card.appendChild(btns);
   }
   function done(st){ if(!st.done){ st.done=true; solved++; bump(); if(st.trk) st.trk.ok(st.right||''); } }
+  /* Заданне было зроблена раней: ставім гатовы выгляд, спробу не дадаём. */
+  function revive(st,f,msg){
+    if(st.done) return;
+    st.done=true; solved++; bump(); st.trk.badge();
+    if(f) say(f,'Гэта ты ўжо зрабіла раней — адказ захаваны. '+(msg||''),'ok');
+  }
+  function remind(st,f){
+    if(!st.trk || !st.trk.hadError || !f) return;
+    say(f,'Мінулы раз тут была памылка. Паспрабуй яшчэ раз.'+(st.trk.rec.wrong? ' Мінулы адказ: '+st.trk.rec.wrong : ''),'tip');
+  }
 
   /* ---- віджэт: разметка сказа ---- */
   var ROLE=['дзейнік','выказнік','даданы член'];
@@ -304,12 +315,14 @@ button.part.heard .n::after{content:" \2713"}
         b.className='w'+(cur>=0?' r'+cur:'');
       });
       b.getRole=function(){ return cur; };
+      b.setRole=function(r){ cur=r; b.className='w'+(r>=0?' r'+r:''); };
       st.btns.push(b); line.appendChild(b);
     });
     wrap.appendChild(hint); wrap.appendChild(line);
     var f=fbEl(wrap); ex.card.appendChild(wrap); total++;
     st.trk=UR(ex, wrap, data.words.map(function(w){return w.w;}).join(' '));
     st.right=data.words.filter(function(w){return w.r===0;}).map(function(w){return w.w;}).join(' ')+' — дзейнік, '+data.words.filter(function(w){return w.r===1;}).map(function(w){return w.w;}).join(' ')+' — выказнік';
+    if(st.trk.restored){ st.btns.forEach(function(b,i){ b.setRole(data.words[i].r); }); revive(st,f,''); } else remind(st,f);
     st.check=function(){
       if(st.done) return true;
       if(!touched){ say(f,'Гэта заданне яшчэ не пачата: спачатку размець словы ў сказе.','tip'); return false; }
@@ -358,6 +371,7 @@ button.part.heard .n::after{content:" \2713"}
     var f=fbEl(wrap); ex.card.appendChild(wrap); total++;
     st.trk=UR(ex, wrap, (data.pic? 'Малюнак: '+data.pic+'. ' : '')+data.parts.map(function(p){ return typeof p==='string'? plainTxt(p) : '___'; }).join(' ').replace(/\s+/g,' ').trim());
     st.right=data.ok||'';
+    if(st.trk.restored){ st.sels.forEach(function(x){ x.value=String(x.correct); x.classList.add('ok'); x.disabled=true; }); revive(st,f,data.ok||''); } else remind(st,f);
     st.check=function(){
       var bad=[], empty=0;
       st.sels.forEach(function(s){
@@ -399,6 +413,7 @@ button.part.heard .n::after{content:" \2713"}
     wrap.appendChild(opts); f=fbEl(wrap); ex.card.appendChild(wrap); total++;
     st.trk=UR(ex, wrap, plainTxt(data.q));
     st.right=data.opts[data.a];
+    if(st.trk.restored){ if(obtns[data.a]) obtns[data.a].classList.add('ok'); obtns.forEach(function(b){ b.disabled=true; }); revive(st,f,data.why||''); } else remind(st,f);
     st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,data.why,'tip'); };
     ex.items.push(st); return st;
   }
@@ -426,6 +441,7 @@ button.part.heard .n::after{content:" \2713"}
     f=fbEl(wrap); ex.card.appendChild(wrap); total++;
     st.trk=UR(ex, wrap, 'Скласці сказ: '+data.words.join(', '));
     st.right=data.order.map(function(i){return data.words[i];}).join(' ');
+    if(st.trk.restored){ chosen=data.order.slice(); chosen.forEach(function(i){ bank.children[i].classList.add('used'); }); redraw(); revive(st,f,data.why||''); } else remind(st,f);
     st.check=function(){
       if(chosen.length!==data.words.length){ say(f,'Выкарыстай усе словы.','tip'); return false; }
       var ok=chosen.every(function(v,i){ return v===data.order[i]; });
@@ -577,6 +593,7 @@ button.part.heard .n::after{content:" \2713"}
   });
   cleanHost.appendChild(openAll);
   bump();
+  exAll.forEach(finish);
   Uroki.mount(document.getElementById('uroki-result'));
 
   /* ---------- голас замест настаўніка ---------- */

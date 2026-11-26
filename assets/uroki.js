@@ -23,6 +23,8 @@ var TXT={
     mixed:'Урок пройден полностью. Задания из списка выше стоит прорешать ещё раз — именно в них была ошибка с первой попытки.',
     inProgress:'Урок ещё не закончен — впереди ещё задания.',
     again:'Пройти урок заново', read:'Понятно — пробую ещё раз',
+    kept:'Это ты уже решила раньше — ответ сохранён.',
+    prevErr:'В прошлый раз здесь была ошибка. Попробуй ещё раз.', prevAns:'Прошлый ответ: ',
     tagFirst:'с первой попытки', tagLate:'со $-й попытки', tagHint:'с подсказкой'
   },
   be:{
@@ -37,6 +39,8 @@ var TXT={
     mixed:'Урок пройдзены цалкам. Заданні са спіса вышэй варта прарашаць яшчэ раз — менавіта ў іх была памылка з першага разу.',
     inProgress:'Урок яшчэ не скончаны — наперадзе яшчэ заданні.',
     again:'Прайсці ўрок зноў', read:'Зразумела — спрабую яшчэ раз',
+    kept:'Гэта ты ўжо зрабіла раней — адказ захаваны.',
+    prevErr:'Мінулы раз тут была памылка. Паспрабуй яшчэ раз.', prevAns:'Мінулы адказ: ',
     tagFirst:'з першага разу', tagLate:'з $-й спробы', tagHint:'з падказкай'
   }
 };
@@ -44,7 +48,7 @@ var TXT={
 function read(){ try{ return JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ return {}; } }
 function write(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
 
-var L=TXT.ru, topic=null, items=[], box=null;
+var L=TXT.ru, topic=null, items=[], box=null, saved=null;
 
 function stats(){
   var s={total:items.length, done:0, first:0, errors:[]};
@@ -62,7 +66,12 @@ function persist(){
   all[topic.id]={
     title:topic.title, subject:topic.subject,
     total:s.total, done:s.done, first:s.first, errors:s.errors.length,
-    updated:Date.now()
+    updated:Date.now(),
+    items:items.map(function(r){
+      return {l:r.label, d:r.done?1:0,
+              f:(r.firstOk===null?null:(r.firstOk?1:0)),
+              t:r.tries, w:r.wrong, r:r.right, x:r.text};
+    })
   };
   write(all);
 }
@@ -131,12 +140,20 @@ var Uroki={
   init:function(o){
     topic=o; items=[];
     L=TXT[o.lang==='be'?'be':'ru'];
+    var e=read()[o.id];
+    saved=(e && e.items instanceof Array)? e.items : null;
     return this;
   },
 
   /* регистрируем одно задание. badgeHost — куда повесить отметку «с первой попытки» */
   item:function(label, group, badgeHost){
-    var rec={label:label||'', group:group||'', done:false, firstOk:null, tries:0, wrong:null, right:null};
+    var rec={label:label||'', group:group||'', done:false, firstOk:null, tries:0, wrong:null, right:null, text:null};
+    var old=saved? saved[items.length] : null;
+    if(old && old.l===rec.label){
+      rec.done=!!old.d;
+      rec.firstOk=(old.f===null||old.f===undefined)? null : !!old.f;
+      rec.tries=old.t||0; rec.wrong=old.w||null; rec.right=old.r||null; rec.text=old.x||null;
+    }
     items.push(rec);
     var badge=null;
     function mark(){
@@ -147,6 +164,13 @@ var Uroki={
     }
     return {
       rec:rec,
+      /* это задание уже было решено в прошлый раз */
+      restored: rec.done,
+      /* решено не было, но ошибка с первой попытки уже записана */
+      hadError: (!rec.done && rec.firstOk===false),
+      savedText: rec.text,
+      /* нарисовать отметку «с первой попытки» без новой попытки */
+      badge: mark,
       /* неверный ответ; detail — что именно ответили */
       wrong:function(detail){
         rec.tries++;
@@ -160,13 +184,16 @@ var Uroki={
         persist(); render();
       },
       /* верный ответ; right — правильный ответ для итоговой карточки */
-      ok:function(right){
+      ok:function(right, text){
         rec.tries++;
         if(rec.firstOk===null) rec.firstOk=true;
         if(right!==undefined && right!==null) rec.right=String(right);
+        if(text!==undefined && text!==null) rec.text=String(text);
         if(!rec.done){ rec.done=true; }
         mark(); persist(); render();
-      }
+      },
+      /* запомнить текст свободного ответа, не меняя попытки */
+      keep:function(text){ rec.text=(text===undefined||text===null)?null:String(text); persist(); }
     };
   },
 
