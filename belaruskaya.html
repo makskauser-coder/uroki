@@ -139,8 +139,8 @@ button.part.now{border-color:var(--accent);background:var(--accent-soft);color:v
 button.part.heard .n::after{content:" \2713"}
 .player{background:var(--accent-soft);border-radius:14px;padding:12px 15px;font-family:var(--font-head);font-weight:600;color:var(--accent);font-size:15.5px}
 </style>
-<link rel="stylesheet" href="assets/uroki.css?v=9">
-<script src="assets/uroki.js?v=9"></script>
+<link rel="stylesheet" href="assets/uroki.css?v=10">
+<script src="assets/uroki.js?v=10"></script>
 </head>
 <body>
 <div class="homebar"><a href="./">← Все уроки</a></div>
@@ -267,7 +267,7 @@ button.part.heard .n::after{content:" \2713"}
     }
   }
   function mkEx(id,title,sub,audio){
-    var ex={id:id,title:title,items:[],card:card(title,sub)};
+    var ex={id:id,title:title,items:[],card:card(title,sub),home:/дамашн/i.test(title)};
     if(audio){
       var b=document.createElement('button'); b.className='b ghost saybtn'; b.type='button';
       b.textContent='\uD83D\uDD0A Паслухаць заданне'; b.setAttribute('data-say',audio);
@@ -285,6 +285,7 @@ button.part.heard .n::after{content:" \2713"}
   /* Падказка вядзе думку і ніколі не кажа адказ. */
   function hintStep(st,f,data,def,pre){
     pre=pre||'';
+    if(st.home && pre){ say(f,'Пакуль не сыходзіцца.','bad'); return; }
     if(!st._r){
       st._r=[];
       if(data.ask) st._r.push(data.ask);
@@ -302,7 +303,11 @@ button.part.heard .n::after{content:" \2713"}
       Uroki.guard(function(){ ex.items.forEach(function(s){ if(s.check) s.check(); }); finish(ex); },
         'Код для праверкі','Праверку адкрывае дарослы. Паклічы маму ці тату — яны ўвядуць код.');
     });
-    b2.addEventListener('click',function(){ for(var i=0;i<ex.items.length;i++){ if(!ex.items[i].done && ex.items[i].explain){ ex.items[i].explain(); return; } } });
+    function runHelp(){ for(var i=0;i<ex.items.length;i++){ if(!ex.items[i].done && ex.items[i].explain){ ex.items[i].explain(); return; } } }
+    b2.addEventListener('click',function(){
+      if(ex.home) Uroki.guard(runHelp,'Код для падказкі','Гэта дамашняе заданне — падказку адкрывае дарослы.');
+      else runHelp();
+    });
     btns.appendChild(b1); btns.appendChild(b2); ex.card.appendChild(btns);
     var lh=document.createElement('p'); lh.className='lockhint';
     lh.textContent='Праверку адкрывае дарослы па кодзе. Падказкі бяры сама.';
@@ -365,7 +370,7 @@ button.part.heard .n::after{content:" \2713"}
       GATE(st.btns, wrap); return false;
     };
     st.explain=function(){ if(st.done) return; st.trk.hint(); hintStep(st,f,data,DEF.mark); };
-    ex.items.push(st); return st;
+    st.home=ex.home; ex.items.push(st); return st;
   }
 
   /* ---- віджэт: выбар слова ---- */
@@ -404,7 +409,7 @@ button.part.heard .n::after{content:" \2713"}
       GATE(st.sels, wrap); return false;
     };
     st.explain=function(){ if(st.done) return; st.trk.hint(); hintStep(st,f,data,DEF.pick); };
-    ex.items.push(st); return st;
+    st.home=ex.home; ex.items.push(st); return st;
   }
 
   /* ---- віджэт: выбар варыянта ---- */
@@ -444,7 +449,7 @@ button.part.heard .n::after{content:" \2713"}
       return false;
     };
     st.explain=function(){ if(st.done) return; st.trk.hint(); hintStep(st,f,data,DEF.choice); };
-    ex.items.push(st); return st;
+    st.home=ex.home; ex.items.push(st); return st;
   }
 
   /* ---- віджэт: скласці сказ ---- */
@@ -481,7 +486,7 @@ button.part.heard .n::after{content:" \2713"}
       return false;
     };
     st.explain=function(){ if(st.done) return; st.trk.hint(); hintStep(st,f,data,DEF.order); };
-    ex.items.push(st); return st;
+    st.home=ex.home; ex.items.push(st); return st;
   }
 
   function schemeEl(slots){
@@ -586,12 +591,12 @@ button.part.heard .n::after{content:" \2713"}
     scheme:schemeEl([{t:'s'},{t:'p'},{q:'якую?',t:'d'},{q:'што?',t:'d'},{t:'.'}]),
     words:['Каця','музычную','наведвае','школу'], order:[0,2,1,3],
     why:'Каця (дзейнік) наведвае (выказнік) музычную (якую?) школу (што?).',
-    hint:'Пачні з таго, пра каго гаворыцца: хто? Каця. Потым — што яна робіць?'});
+    hint:'Пачынай з дзейніка: пра каго ці пра што гаворыцца ў сказе? Потым пастаў слова, якое кажа, што ён робіць. Астатнія словы дастаўляй па пытаннях ад галоўных.'});
   orderWidget(e129,{
     scheme:schemeEl([{t:'s'},{t:'p'},{q:'як?',t:'d'},{q:'на чым?',t:'d'},{t:'.'}]),
     words:['Дзяўчынка','на','скрыпцы','іграе','добра'], order:[0,4,3,1,2],
     why:'Дзяўчынка (дзейнік) добра (як?) іграе (выказнік) на скрыпцы (на чым?). Прыназоўнік «на» стаіць перад словам «скрыпцы».',
-    hint:'Пачні з дзейніка: хто? Дзяўчынка. Слова «добра» адказвае на пытанне «як?», «на скрыпцы» — на пытанне «на чым?».'});
+    hint:'Пачынай з дзейніка, потым выказнік. Далей глядзі на схему: пад кожны авал падбяры тое слова, якое адказвае менавіта на яго пытанне.'});
   choiceWidget(e129,{q:'Растлумач правапіс выдзеленай літары ў слове скр<b>ы</b>пцы. Чаму пішам <b>ы</b>, а не <b>і</b>?',
     opts:['Бо так прыгажэй','Бо пасля зацвярдзелых ж, дж, ч, ш, р, ц заўсёды пішацца ы','Бо слова іншамоўнае'],a:1,
     why:'У беларускай мове пасля зацвярдзелых <b>ж, дж, ч, ш, р, ц</b> пішацца <b>ы</b>: скрыпка, рыба, жыць, шырокі, цырк.',
