@@ -537,7 +537,7 @@ free:function(ex,d){
     say(f,m2,'bad');
     return false;
   };
-  st.explain=function(){ if(st.done) return; st.trk.hint(); say(f,(d.hint||d.why||''),'tip'); };
+  st.explain=function(){ if(st.done) return; st.trk.hint(); helpStep(st,f,d,'',d.hint||''); };
   /* черновик свободного ответа сохраняем даже без проверки */
   ta.addEventListener('blur',function(){ if(!st.done) st.trk.keep(ta.value); });
   if(st.trk.savedText){ ta.value=st.trk.savedText; }
