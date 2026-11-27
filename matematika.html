@@ -150,9 +150,22 @@ button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:va
 .cheat{display:flex;flex-wrap:wrap;gap:7px}
 .cnum{font-family:var(--font-head);font-weight:700;font-size:17px;border-radius:10px;padding:8px 12px;background:var(--surface-2);color:var(--muted);border:2px solid var(--line);font-variant-numeric:tabular-nums}
 .cnum.yes{background:var(--units-soft);color:var(--units);border-color:var(--units)}
+.ways,.splitbox{margin-top:12px;padding:14px;border-radius:14px;background:var(--accent-soft)}
+.ways .wh,.splitbox .wh{margin:0 0 10px;font-family:var(--font-head);font-weight:600;font-size:16px}
+.wayb{display:block;width:100%;text-align:left;font:400 15.5px/1.45 var(--font-body);padding:11px 13px;margin:0 0 8px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.wayb.ok{border-color:var(--units);background:var(--units-soft)}
+.wayb.bad{border-color:var(--wrong);background:var(--wrong-soft)}
+.way-why{font-size:14.5px;line-height:1.45;margin:-4px 0 10px;padding:9px 13px;border-radius:10px;background:var(--surface-2)}
+.splits{display:flex;flex-wrap:wrap;gap:8px}
+.splitb{font-family:var(--font-head);font-weight:700;font-size:18px;font-variant-numeric:tabular-nums;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.splitb.ok{border-color:var(--units);background:var(--units-soft);color:var(--units)}
+.splitb.bad{border-color:var(--wrong);background:var(--wrong-soft);color:var(--wrong);opacity:.7}
+.split-why{font-size:15px;line-height:1.5;margin:10px 0 0;padding:10px 13px;border-radius:10px;background:var(--surface-2)}
+.split-sum{margin:9px 0 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--font-head);font-weight:700;font-size:19px;font-variant-numeric:tabular-nums}
+.split-sum i{font-style:normal;background:var(--surface);border:2px dashed var(--line);border-radius:10px;padding:7px 12px}
 </style>
-<link rel="stylesheet" href="assets/uroki.css?v=11">
-<script src="assets/uroki.js?v=11"></script>
+<link rel="stylesheet" href="assets/uroki.css?v=12">
+<script src="assets/uroki.js?v=12"></script>
 </head>
 <body>
 <div class="homebar"><a href="./">← Все уроки</a></div>
@@ -656,6 +669,16 @@ button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:va
    {n:85,d:5,s:'Посмотри на другом примере — <b>85 : 5</b>. В 85 восемь десятков. 8 на 5 не делится, 7 — нет, 6 — нет, 5 — да. Значит круглый кусок это 50, а второй 85 − 50 = 35. Делю каждый кусок на 5 и складываю.'}
   ];
   function split46(n,d){ var t=Math.floor(n/10), a=0; for(var i=t;i>=1;i--){ if(i%d===0){ a=i; break; } } return {T:a*10, R:n-a*10}; }
+  /* Варианты круглых кусков: верный плюс несколько соседних. */
+  function splitOpts46(n,d){
+    var good=split46(n,d).T, tens=Math.floor(n/10), list=[];
+    for(var t=tens; t>=1; t--){ var T=t*10; if(n-T>0) list.push(T); }
+    if(list.indexOf(good)<0) list.unshift(good);
+    var near=list.filter(function(T){ return Math.abs(T-good)<=20; });
+    if(near.indexOf(good)<0) near.push(good);
+    near.sort(function(a,b){ return b-a; });
+    return near.slice(0,4);
+  }
   function helpDiv46(n,d){
     var sp=split46(n,d), T=sp.T, R=sp.R, tens=Math.floor(n/10), big=tens*10;
     var sm=SAMPLES46[(n+d)%2];
@@ -669,6 +692,7 @@ button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:va
     var ways=[w1,w2,w3], k=(n+d)%3;
     while(k>0){ ways.unshift(ways.pop()); k--; }
     return {
+      split:{n:n, d:d, opts:splitOpts46(n,d), good:T},
       ask:'Число надо разбить на два куска, и первый должен быть круглым. Но какой круглый взять? Смотри не на всё число, а на <b>количество десятков</b>: в '+n+' их '+tens+'. Делится ли '+tens+' на '+d+'? Если нет — спускайся: '+(tens-1)+', '+(tens-2)+'… Первое подходящее число десятков и даст твой круглый кусок.',
       sample: sm.s,
       ways: ways
@@ -684,6 +708,7 @@ button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:va
   function rungs(h){
     var r=[];
     if(h.ask) r.push({t:'ask', v:h.ask});
+    if(h.split) r.push({t:'split'});
     if(h.sample) r.push({t:'sample', v:h.sample});
     if(h.ways && h.ways.length) r.push({t:'ways'});
     return r;
@@ -721,10 +746,45 @@ button.round.bad{border-color:var(--wrong);background:var(--wrong-soft);color:va
         });
         wrap.appendChild(box);
       }
+      /* Разложи сама: ребёнок выбирает круглый кусок, страница только проверяет. */
+      function splitBox(){
+        if(wrap.querySelector('.splitbox')) return;
+        var sp=help.split, n=sp.n, d=sp.d;
+        var box=document.createElement('div'); box.className='splitbox';
+        var hh=document.createElement('p'); hh.className='wh';
+        hh.innerHTML='Разложи '+n+' на два куска. Нажми вариант — я скажу, годится он или нет. Какой кусок делится на '+d+' нацело?';
+        box.appendChild(hh);
+        var row=document.createElement('div'); row.className='splits';
+        var why=document.createElement('p'); why.className='split-why'; why.hidden=true;
+        var sum=document.createElement('div'); sum.className='split-sum'; sum.hidden=true;
+        sp.opts.forEach(function(T){
+          var R=n-T;
+          var b=document.createElement('button'); b.type='button'; b.className='splitb';
+          b.textContent=T+' и '+R;
+          b.addEventListener('click',function(){
+            var okT=(T%d===0), okR=(R%d===0);
+            if(okT && okR){
+              b.className='splitb ok';
+              why.innerHTML='Годится: и '+T+', и '+R+' делятся на '+d+' нацело. Теперь раздели каждый кусок отдельно и сложи два результата.';
+              sum.innerHTML='<i>'+T+' : '+d+' = ?</i><span>+</span><i>'+R+' : '+d+' = ?</i><span>→ сложи</span>';
+              sum.hidden=false;
+            } else {
+              b.className='splitb bad';
+              why.innerHTML='Не годится: '+(!okT? ('кусок '+T+' на '+d+' нацело не делится') : ('второй кусок '+R+' на '+d+' нацело не делится'))+'. Возьми круглый кусок поменьше и проверь снова.';
+              sum.hidden=true;
+            }
+            why.hidden=false;
+          });
+          row.appendChild(b);
+        });
+        box.appendChild(row); box.appendChild(why); box.appendChild(sum);
+        wrap.appendChild(box);
+      }
       function helpStep(pre){
         pre=pre||'';
         if(!rl.length){ say(pre+'Перечитай условие и скажи вслух, что надо найти.', pre?'bad':'tip'); return; }
         var cur=rl[Math.min(st.hi, rl.length-1)]; st.hi++;
+        if(cur.t==='split'){ say(pre+'Попробуй разложить сама — выбери вариант ниже.', pre?'bad':'tip'); splitBox(); return; }
         if(cur.t==='ways'){ say(pre+'Вот три рассуждения — выбери верное.', pre?'bad':'tip'); waysBox(); return; }
         say(pre+(cur.t==='sample'? '📘 ' : '💡 ')+cur.v, pre?'bad':'tip');
       }
