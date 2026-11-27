@@ -68,7 +68,7 @@ var TXT={
 function read(){ try{ return JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ return {}; } }
 function write(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
 
-var L=TXT.ru, topic=null, items=[], box=null, saved=null;
+var L=TXT.ru, topic=null, items=[], box=null, saved=null, usedSaved=null;
 
 function stats(){
   var s={total:items.length, done:0, first:0, errors:[]};
@@ -209,14 +209,26 @@ var Uroki={
     L=TXT[o.lang==='be'?'be':'ru'];
     var e=read()[o.id];
     saved=(e && e.items instanceof Array)? e.items : null;
+    usedSaved={};
     return this;
   },
 
   /* регистрируем одно задание. badgeHost — куда повесить отметку «с первой попытки» */
   item:function(label, group, badgeHost){
     var rec={label:label||'', group:group||'', done:false, firstOk:null, tries:0, wrong:null, right:null, text:null};
-    var old=saved? saved[items.length] : null;
-    if(old && old.l===rec.label){
+    /* Ищем сохранённое задание по подписи, а не по номеру: тогда новое
+       упражнение, вставленное в середину урока, не сбрасывает пройденное. */
+    var old=null;
+    if(saved){
+      var i=items.length;
+      if(saved[i] && saved[i].l===rec.label && !usedSaved[i]){ old=saved[i]; usedSaved[i]=1; }
+      else {
+        for(var k=0;k<saved.length;k++){
+          if(!usedSaved[k] && saved[k] && saved[k].l===rec.label){ old=saved[k]; usedSaved[k]=1; break; }
+        }
+      }
+    }
+    if(old){
       rec.done=!!old.d;
       rec.firstOk=(old.f===null||old.f===undefined)? null : !!old.f;
       rec.tries=old.t||0; rec.wrong=old.w||null; rec.right=old.r||null; rec.text=old.x||null;
